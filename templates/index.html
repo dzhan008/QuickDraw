@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<title>{{ title }} - Quick Draw</title>
+	</head>
+	<body>
+		<h1> Quick Draw!</h1>
+        <form action="\index" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.room_code.label }}<br>
+                {{ form.room_code(size=32) }}<br>
+                {% for error in form.room_code.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.name.label }}<br>
+                {{ form.name(size=32) }}<br>
+                {% for error in form.name.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.submit() }}
+            </p>
+        </form>
+	</body>
+</html>
+
