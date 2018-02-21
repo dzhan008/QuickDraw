@@ -1,0 +1,18 @@
+player:
+1. points
+2. player ID
+3. games played
+
+static int games to play is set based on the amount of players
+int amount of players = n
+3-8 players 2 games
+
+one 2d vector, pointer to the first 2 players
+one for loopeck games played, if player 1 and player 2
+  games played < games to play then
+
+check pointer, pit those two against each other, then add 2.
+  if counter > n && player 1 and player 2 games played < games to play
+  then counter - n
+  else
+    end game

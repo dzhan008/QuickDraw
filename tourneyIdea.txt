@@ -1,0 +1,12 @@
+object for user:
+1. rank
+2. group number
+3. sector number
+4. bracket number
+5. player ID
+
+each player will be randomly slotted into the bracket
+each player will be given and group number, a sector number and a bracket number
+given sector number and bracket number 2 times
+
+

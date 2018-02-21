@@ -19,7 +19,7 @@ firebase.authentication = authentication
 socketio = SocketIO(flask_app)
 
 #Variables
-HOST = '192.168.56.1'
+HOST = '10.25.3.89'
 PORT = 8888
 clients = []
 
