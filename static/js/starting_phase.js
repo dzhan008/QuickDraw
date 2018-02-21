@@ -37,7 +37,22 @@ $(document).ready(function(){
     });
 
     $("button").mouseup(function(){
-        socket.emit('unready')
+        var url = "{{ url_for('draw') }}"; // send the form data here.
+        if(inGame) {
+            //socket.emit('drawingPhase');
+            $.ajax({
+                type: "POST",
+                url: '/draw',
+                //data: ,
+                success: function (data) {
+                    console.log(data)  // display the returned data in the console.
+                    $('body').html(data);
+                }
+            });
+        }
+        else {
+            socket.emit('unready');   
+        }
     });
     //Touch events
     $("button").on("touchstart", function(){
