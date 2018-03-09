@@ -30,8 +30,8 @@ def create_app():
     flask_app.config['competitors'] = competitors
     flask_app.config['players'] = players
     flask_app.config['playersReady'] = playersReady
-    flask_app.config['playerOneVotes'] = players
-    flask_app.config['playerTwoVotes'] = players
+    flask_app.config['playerOneVotes'] = playerOneVotes
+    flask_app.config['playerTwoVotes'] = playerTwoVotes
     flask_app.config['spectators'] = spectators
     flask_app.config['showdown'] = showdown
     flask_app.config['host'] = host
