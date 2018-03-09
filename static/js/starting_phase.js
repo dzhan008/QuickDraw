@@ -1,105 +1,83 @@
-var minTime = 2;
-var maxTime = 10;
-var timeLeft = Math.floor((Math.random() * (maxTime - minTime + 1) + minTime));
-var bang = document.getElementById('MainText');
-var timerID;
-var socket;
 var inGame = false;
+var displayText = document.getElementById('MainText');
+var prompt = "";
+var socket;
 $(document).ready(function(){
 
     socket = io.connect('http://' + document.domain + ':' + location.port );
     
     socket.on('connect', function() {
-        
-        console.log('Emmitted message.');
+        console.log('Competitor connected.');
+        socket.emit('setCompetitor');
     });
-    
-    socket.on('response', function(msg){
-        console.log(msg);
-        timeLeft = parseInt(msg.data);
-        timerID = setInterval(countdown, 1000);
-    });
-    
+
+//Provides a display of how many players are ready.
     socket.on('displayready', function(msg) {
         console.log('Incrementing Ready counter.');
         document.getElementById('PlayersReady').innerHTML = msg.data + " Players Ready";
     });
     
-    //Handles case that someone let go of the screen too early.
+//Handles case that someone let go of the screen too early.
     socket.on('falseStart', function() {
-        clearInterval(timerID);
         console.log('False Start!');
-        bang.innerHTML = 'Someone let go early! False start!';
+        displayText.innerHTML = 'Someone let go early! False start!';
     });
-    //Mouse events
+//Migrate player to drawing phase.    
+    socket.on('drawingPhase', function(reply) {
+        inGame = true;
+        prompt = reply.data;
+    })
+    
+//Mouse events
     $("button").mousedown(function(){
-        socket.emit('ready', {data: 'I\'m connected!'});
+        handleReady();
     });
 
     $("button").mouseup(function(){
-        var url = "{{ url_for('draw') }}"; // send the form data here.
-        if(inGame) {
-            //socket.emit('drawingPhase');
-            $.ajax({
-                type: "POST",
-                url: '/draw',
-                //data: ,
-                success: function (data) {
-                    console.log(data)  // display the returned data in the console.
-                    $('body').html(data);
-                }
-            });
-        }
-        else {
-            socket.emit('unready');   
-        }
+        handleUnready();
     });
-    //Touch events
+//Touch events
     $("button").on("touchstart", function(){
-        socket.emit('ready', {data: 'I\'m connected!'});
+        handleReady();
     });
     
     $("button").on("touchend", function(){
-        var url = "{{ url_for('draw') }}"; // send the form data here.
-        if(inGame) {
-            //socket.emit('drawingPhase');
-            $.ajax({
-                type: "POST",
-                url: '/draw',
-                //data: ,
-                success: function (data) {
-                    console.log(data)  // display the returned data in the console.
-                    $('body').html(data);
-                }
-            });
-        }
-        else {
-            socket.emit('unready');   
-        }
+        handleUnready();
     }); 
     
-    //This should avoid the context menu on chrome when pressing and holding.
+//This should avoid the context menu on chrome when pressing and holding.
     window.oncontextmenu = function(event) {
      event.preventDefault();
      event.stopPropagation();
      return false;
 };
-    
-    
+     
 });
 
 
-function countdown() 
+//Handles ready case for mouse and touch inputs.
+function handleReady()
 {
-    if(timeLeft == 0)
-    {
-        clearTimeout(timerID);
-        inGame = true;
-        bang.innerHTML = 'BANG!';
+    socket.emit('ready');
+}
+
+//Handles unready case for mouse and touch inputs.
+function handleUnready()
+{
+    if(inGame) {
+        $.ajax({
+            type: "POST",
+            url: '/draw',
+            //data: JSON.stringify( {'num' : '0', 'hi' : 'baka'} ) , //NEW
+            //contentType: 'application/json;charset=UTF-8', //NEW
+            success: function (data) {
+                console.log(data)  // display the returned data in the console.
+                $('body').html(data);
+                $('#prompt').html(prompt);
+            }
+        });
     }
-    else
-    {
-        bang.innerHTML = timeLeft + ' seconds remaining';
-        timeLeft--;
+    else {
+        socket.emit('unready');  
     }
 }
