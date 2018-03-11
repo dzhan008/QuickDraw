@@ -1,1 +1,1 @@
-__all__ = ["forms", "helper"]
+__all__ = ["forms", "helper", "GameManager", "LobbyManager", "Player"]

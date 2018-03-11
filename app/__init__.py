@@ -1,6 +1,7 @@
 from flask import Flask, request
 from firebase import firebase, FirebaseApplication, FirebaseAuthentication
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send, emit
+from classes.LobbyManager import LobbyManager 
 
 socketio = SocketIO()
 #Initialize the firebase database
@@ -19,6 +20,7 @@ spectators = []
 showdown = False
 host = None
 currentPrompt = None
+LobbyManager = LobbyManager() 
 
 def create_app():
     global flask_app
@@ -36,6 +38,7 @@ def create_app():
     flask_app.config['showdown'] = showdown
     flask_app.config['host'] = host
     flask_app.config['currentPrompt'] = currentPrompt
+    flask_app.config['LobbyManager'] = LobbyManager
 
     #Initialize the socketIO object
     socketio.init_app(flask_app)
@@ -44,15 +47,33 @@ def create_app():
     from events import *
     return flask_app
 
+# @socketio.on('connect')
+# def handle_connect():
+#     clients.append(request.sid)
+
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     clients.remove(request.sid)
+
+
 @socketio.on('connect')
 def handle_connect():
     clients.append(request.sid)
+    print "Client connected"
+    #emit('changeWeb', {'data': }, broadcast=True);
 
 @socketio.on('disconnect')
 def handle_disconnect():
+    print "Client disconnected"
     clients.remove(request.sid)
-
-
+    gameCode = LobbyManager.checkHostDisconnect(request.sid)
+    if gameCode:
+        emit('serverMsg', 'return', room=gameCode)
+        return
+    userName = LobbyManager.getNameFromSID(request.sid)
+    hostSID = LobbyManager.removePlayer(request.sid)
+    if userName != "":
+        emit('playerLeave', userName, room=hostSID)
 
 
 

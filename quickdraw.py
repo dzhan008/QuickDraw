@@ -1,6 +1,6 @@
 from app import create_app, socketio
 
-HOST = '192.168.1.6'
+HOST = '192.168.1.108'
 PORT = 8888
 app = create_app()
 

@@ -15,7 +15,36 @@
 		<title>Login Quick Draw</title>
 	</head>
 	<body>
-		  <h1> Hello, {{ user }}!</h1>
-          <h1> Room Code: {{ room_code }}</h1>
+		<h1>Please wait for the game to start</h1>
+		<h1> Hello, {{ user }}!</h1>
+		<h1> Room Code: {{ room_code }}</h1>
 	</body>
+	<script>
+		$(document).ready(function(){
+			//Send a message to the server to let it know 
+			//that a user joined. So that the server can
+			//Tell the host client to update the list
+			var char = document.createElement('img');
+			char.src = "/static/images/Idle" + '{{char_select}}' + '.png';
+			document.body.appendChild(char);
+			socket.emit('playerJoin', {user: '{{user}}', char_select: '{{char_select}}', room_code: '{{room_code}}'});
+		});
+		socket.on('serverMsg', function(msg)
+        {
+            if (msg == 'return')
+            {
+            	$.ajax(
+            	{
+            		type:'POST',
+            		url: '/index',
+            		success: function(data)
+            		{
+            			console.log(data);
+            			$('body').html(data);
+            		}
+            	});
+            }
+        });
+	</script>
 </html>
+

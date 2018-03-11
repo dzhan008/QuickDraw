@@ -65,6 +65,14 @@ def startDrawing():
     flask_app.config['currentPrompt'] = helper.generatePrompt()
     helper.tellGroupWithData('drawingPhase', flask_app.config['currentPrompt'], competitors)
 
+@socketio.on('canvasData')
+def displayDrawing(json):
+    print json
+    #if request.sid == competitors[0]:
+        #emit('player1Data', json, room=flask_app.config['host']);
+    #else:
+        #emit('player2Data', json, room=flask_app.config['host']);
+
 #Voting Phase Events
 
 @socketio.on('startVoting')
