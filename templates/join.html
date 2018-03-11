@@ -1,0 +1,125 @@
+<html>
+	<head>
+		<title>{{ title }} - Quick Draw</title>
+        <script src="http://code.jquery.com/jquery-1.8.3.min.js">
+        </script>
+	</head>
+	<body id="Main">
+		<h1> Quick Draw!</h1>
+        <form action="/index" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.room_code.label }}<br>
+                {{ form.room_code(size=32) }}<br>
+                {% for error in form.room_code.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.name.label }}<br>
+                {{ form.name(size=32) }}<br>
+                {% for error in form.name.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.char_select.label }}<br>
+                {{ form.char_select(size=5) }}<br>
+            </p>
+            <p>
+                <input type="button" id="player" value="Join as Player"/>
+                <input type="button" id="spectator" value="Join as Spectator"/>
+            </p>
+        </form>
+        
+	</body>
+    
+    <script>
+        $(document).ready(function() {
+        socket.on('playerState', function(msg)
+        {
+            console.log(msg);
+            if (msg == 0)
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '/login',
+                    data: $('form').serialize(), // serializes the form's elements.
+                    success: function (data) {
+                        console.log(data);
+                        if (data['error'] == 1)
+                        {
+                            alert("Wrong Game Code");
+                            return;
+                        }
+                        else if (data['error'] == 2)
+                        {
+                            alert("The room is full!");
+                            return;
+                        }
+                        else if (data['error'] == 3)
+                        {
+                            alert('Please choose a different username');
+                            return;
+                        }
+                        else if (data['error'] == 4)
+                        {
+                            alert('Invalid form');
+                            return;
+                        }
+                        $('body').html(data);
+
+                    }
+                });
+            }
+            else
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '/rejoin',
+                    data: JSON.stringify({gameState: msg}),
+                    contentType: 'application/json;charset=UTF-8', // serializes the form's elements.
+                    success: function (data) {
+                        console.log(data);
+                        //$('body').html(data);
+                    }
+                });
+            }
+        });
+        // $('#player').unbind().click(function (e) {
+        //     e.stopPropagation();
+        //     playerAction();           
+        // });
+        $("#player").on("click touchstart", function(e){
+            e.stopPropagation();
+            playerAction();
+        });
+        $('#spectator').click(function (e) {
+            //Put stuff here
+        });
+        function playerAction()
+        {
+            console.log("playerAction");
+            var name = document.getElementsByName('name')[0].value;
+            var gameCode = document.getElementsByName('room_code')[0].value;
+            socket.emit('checkExistUser', {user: name, room_code: gameCode}); 
+        }
+        function spectatorAction()
+        {
+
+        }
+        // Inject our CSRF token into our AJAX request.
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
+            }
+        })
+    
+    });
+        
+    </script>
+
+</html>
+

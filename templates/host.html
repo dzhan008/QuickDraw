@@ -1,0 +1,56 @@
+<html>
+
+    <head>
+        <title>Quick Draw</title>
+        
+        <!-- Scripts -->
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        
+        <!--Style Sheets -->
+        <link href="{{ url_for('static', filename='css/showdown.css') }}" rel="stylesheet">
+        <link href="../static/css/showdown.css" rel="stylesheet"> <!--- REMOVE AFTER TESTS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    </head>
+    
+    <body style="background-image: url(static/images/GameBackground.png); background-size: cover">
+
+        <h1 class="display-1 text-center" id="top-text">PRESS ON SCREEN TO READY</h1>
+        
+
+        <div class="row">
+        <!--PLAYER ONE IMAGES -->
+            <div class="col-sm-3" align="center">
+                <div class="player">
+                        <img class="notReady" id="comp-one-ready">
+                        <img class="modelOne" id="comp-one-model"> <br>
+                        <span class="name-tag">PLAYER ONE</span>
+                </div>
+            </div>
+        <!--CENTER IMAGES -->
+            <div class="col-sm-6" align="center">
+                <img style="content: url(static/images/PressScreen.png)" id="press-screen">
+                <div class="timer-text" id="Timer"></div>
+                <div id="Canvas"></div>
+                <div id="Voting"></div>
+            </div>
+        <!--PLAYER TWO IMAGES -->
+            <div class="col-sm-3" align="center">
+                <div class="player">
+                    <img class="notReady" id="comp-two-ready">
+                    <img class="modelTwo" id="comp-two-model"> <br>
+                    <p id="comp_one_name"><span class="name-tag">PLAYER TWO</span></p>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
+
+<script src="{{ url_for('static', filename='js/host.js') }}"></script>
+
+

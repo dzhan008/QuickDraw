@@ -11,3 +11,61 @@ html
 {
     background-color: aliceblue;
 }
+
+.timer-text
+{
+    font-size: 20em;
+}
+
+.name-tag
+{
+    background-color: azure;
+    font-size: 15pt;
+    margin-top: 10%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    padding-left: 13%;
+    padding-right: 13%;
+}
+
+.player
+{
+    margin-top: 50%;
+}
+
+.ready
+{
+    content: url(../images/Ready.png);
+    margin-bottom: 10%;
+}
+
+.notReady
+{
+    content: url(../images/NotReady.png);
+    margin-bottom: 10%;
+}
+
+.modelOne
+{
+    content: url(../images/Idle0.png);
+    margin-bottom: 5%;
+    transform: scaleX(-1); /*HAndles flipping the image of the left player */
+}
+
+.modelTwo
+{
+    content: url(../images/Idle1.png);
+    margin-bottom: 5%;
+}
+
+.test
+{
+    background: red;
+    margin: 0 auto;
+    width: auto%;
+    height: 100%;
+}
+#canvas
+{
+    border: 1px solid gray;
+}

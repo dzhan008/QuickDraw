@@ -1,0 +1,78 @@
+<html>
+	<body>
+		<h1> You should see the competitor's clients here!</h1>
+		<div>
+		    {{ competitor_1 }}
+		    <div id="canvasDiv1" style="margin:0 auto;"></div>
+		</div>
+		<div>
+		    {{ competitor_2 }}
+		    <div id="canvasDiv2" style="margin:0 auto;"></div>
+		</div>
+        <script>
+			var canvasDiv1;
+			var canvas1;
+			var context1;
+			var canvasWidth = 500;
+			var canvasHeight = 700;
+
+			var canvasDiv2;
+			var canvas2;
+			var context2;
+			var previousSize = 0;
+			var count = 0;
+			$( document ).ready(function() {
+				canvasDiv1 = document.getElementById('canvasDiv1');
+				canvas1 = document.createElement('canvas');
+				canvas1.setAttribute('width', canvasWidth);
+				canvas1.setAttribute('height', canvasHeight);
+				canvas1.setAttribute('id', 'canvas1');
+				canvasDiv1.appendChild(canvas);
+				context1 = canvas1.getContext("2d");
+				context1.strokeStyle = "#a52224";
+				context1.lineJoin = "round";
+				context1.lineWidth = 5;
+
+				canvasDiv2 = document.getElementById('canvasDiv');
+				canvas2 = document.createElement('canvas');
+				canvas2.setAttribute('width', canvasWidth);
+				canvas2.setAttribute('height', canvasHeight);
+				canvas2.setAttribute('id', 'canvas2');
+				canvasDiv2.appendChild(canvas2);
+				context2 = canvas2.getContext("2d");
+				context2.strokeStyle = "#cc99b5";
+				context2.lineJoin = "round";
+				context2.lineWidth = 5;
+
+
+				if(typeof G_vmlCanvasManager != 'undefined') {
+					canvas = G_vmlCanvasManager.initElement(canvas);
+				}
+
+				function redraw(context, arrX, arrY)
+				{
+					//context2.clearRect(0, 0, context2.canvas.width, context2.canvas.height); // Clears the canvas
+							
+					context.moveTo(arrX[0], arrY[0]);
+					context.lineTo(arrX[1], arrY[1]);
+					context.closePath();
+					context.stroke();
+
+				}
+				socket.on('player1Data', function(json)
+			    {
+			    	redraw(context1, json['sliceClickX'], json['sliceClickY']);
+			    });
+			    socket.on('player2Data', function(json)
+			    {
+			        redraw(context2, json['sliceClickX'], json['sliceClickY']);
+			    });
+
+				init();
+			});
+
+        </script>
+	</body>
+    
+</html>
+

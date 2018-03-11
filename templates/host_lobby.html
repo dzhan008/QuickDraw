@@ -1,0 +1,103 @@
+<html>
+    <head>
+        <title>Login Quick Draw</title>
+    </head>
+    <body>
+        <h1> Room Code: {{ code }}</h1>
+        <button id="StartGame">Start Game</button>
+        <button id="Disconnect">Disconnect</button>
+        <div class="container">
+            <div class="row" id="playerList">
+            </div>
+        </div>
+        <!-- <ul id="playerList">
+        </ul> -->
+    </body>
+    <script>
+        var alternateAlign = 1;
+        $(document).ready(function()
+        {
+            //console.log('+{{code}});
+            var codeString = '{{code}}';
+            socket.emit('createGame', codeString);
+            $("#StartGame").on("touchstart", function(){
+                startGame();
+            });
+            $( "#StartGame" ).click(function() {
+                startGame();
+            });
+            $("#Disconnect").on("touchstart", function(){
+                disconnect();
+            });
+            $( "#Disconnect" ).click(function() {
+                disconnect();
+            });
+        });
+        function startGame()
+        {
+            $.ajax({
+                type:'POST',
+                url:'/startGame',
+                success: function(data)
+                {
+                    //Do an error check if there isn't enough players
+                    $('body').html(data);
+                }
+            });
+        }
+        function disconnect()
+        {
+
+            $.ajax({
+                type:'POST',
+                url:'/index',
+                success: function(data)
+                {
+                    socket.emit('disconnectGame', '{{code}}');
+                    $('body').html(data);
+
+                }
+            });
+        }
+        socket.on('serverMsg', function(msg)
+        {
+            console.log(msg);
+        });
+        socket.on('playerJoin', function(msg)
+        {
+            var playerList = document.getElementById('playerList');
+            var col = document.createElement('div');
+            col.setAttribute('id', msg['username']);
+            col.className = 'col-md-2 ';
+            if (alternateAlign)
+            {
+                col.className += 'align-self-start';
+                alternateAlign = 0;
+            }
+            else 
+            {
+                col.className += 'align-self-center';
+                alternateAlign = 1;
+            }
+            var img = document.createElement('img');
+            img.src = "static/images/Idle" + msg['charIndex'] + '.png';
+            img.className = 'charLobby';
+            col.appendChild(img);
+            col.appendChild(document.createTextNode(msg['username']));
+            col.style.cssText = "left:-800px";
+            playerList.appendChild(col);
+            $(col).animate({'left': 0}, 1000);
+            //$(playerList).hide().fadeIn(1000);
+            // var ul = document.getElementById('playerList');
+            // var li = document.createElement("li");
+            // li.setAttribute('id', msg['username']);
+            // li.appendChild(document.createTextNode(msg['username']));
+            // ul.appendChild(li);
+        });
+        socket.on('playerLeave', function(msg)
+        {
+            console.log(msg);
+            $('#' + msg).remove();
+        });
+    </script>
+</html>

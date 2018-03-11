@@ -1,3 +1,5 @@
+<!--TEST HTML FILE TO QUEUE PLAYERS INTO A SAMPLE GAME -->
+
 <html>
 
     <head>
@@ -9,19 +11,10 @@
     
     <body>
         <div id="MainText">
-            Waiting for players...
+            Currently Spectating Match...
         </div>
-        
-        <button class="noSelect" id="Fire Button">Press and hold to ready!</button>
-        <div id="PlayersReady">
-            0 Players Ready
-        </div>
-    
     </body>
-
+    <script src="{{ url_for('static', filename='js/spectator.js') }}"></script>
 </html>
-
-<script src="{{ url_for('static', filename='js/starting_phase.js') }}"></script>
-
 
 

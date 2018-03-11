@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 from wtforms.validators import ValidationError
 
@@ -12,5 +12,6 @@ def validate_name(form, field):
 class LoginForm(FlaskForm):
     room_code = StringField('Room Code', validators=[DataRequired()])
     name = StringField('Name (Limit 12 Characters)', validators=[DataRequired(), validate_name])
+    char_select = SelectField('How are you feeling?', choices = [('0', "Chill"), ('1', "A million bucks"), ('2', "Mischievous"), ('3', "Carefree"), ('4', "Clean")])
     submit = SubmitField('Play')
 
