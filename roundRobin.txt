@@ -3,16 +3,34 @@ player:
 2. player ID
 3. games played
 
-static int games to play is set based on the amount of players
+static const int games to play is set based on the amount of players
 int amount of players = n
 3-8 players 2 games
 
-one 2d vector, pointer to the first 2 players
-one for loopeck games played, if player 1 and player 2
-  games played < games to play then
+two array (one array for players and one for players games played), int pointer to the first 2 players
 
-check pointer, pit those two against each other, then add 2.
-  if counter > n && player 1 and player 2 games played < games to play
-  then counter - n
-  else
+---------------------------------------------------------
+while (unfair == true)
+  if (player 1 games played == 5)
+    unfair == false
     end game
+  if (all players game played is equivalent (fair == true))
+    if (player 1 game played > games to play)
+      unfair == false
+      end game
+  else
+    if counter >= n
+      then counter - (n - 1)
+    pointer1, pointer2 game start
+    pointer1 + 2, pointer2 + 2
+
+    for loop ( for n players )
+      int temp
+      temp = array2[0]
+      if array2[i] == temp
+        if i == n - 1
+          fair = true
+      else
+        break
+  
+    
