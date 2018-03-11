@@ -91,14 +91,15 @@
         //     playerAction();           
         // });
         $("#player").on("click touchstart", function(e){
-            e.stopPropagation();
-            playerAction();
+            playerAction(e);
         });
         $('#spectator').click(function (e) {
             //Put stuff here
         });
-        function playerAction()
+        function playerAction(e)
         {
+            e.stopPropagation();
+            e.preventDefault();
             console.log("playerAction");
             var name = document.getElementsByName('name')[0].value;
             var gameCode = document.getElementsByName('room_code')[0].value;

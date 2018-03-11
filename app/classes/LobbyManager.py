@@ -22,6 +22,10 @@ class LobbyManager:
 				return roomCode
 		return 0
 
+	def getGameManager(self, gameCode):
+		if gameCode in self.GameManagerDict.keys():
+			return GameManagerDict[gameCode]
+
 	#Adds the player to the GameManager for the room
 	def addPlayer(self, gameCode, playerObj):
 		if gameCode in self.GameManagerDict.keys():
