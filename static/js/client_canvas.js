@@ -27,17 +27,20 @@ $( document ).ready(function() {
 
 	function start(e)
 	{
+		console.log(e);
 		e.preventDefault();
 		paint = true;
-		addClick(e.touches["0"].pageX - this.offsetLeft, e.touches["0"].pageY - this.offsetTop);
+		addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+		//addClick(e.touches["0"].pageX - this.offsetLeft, e.touches["0"].pageY - this.offsetTop);
 		redraw();
 	}
 
 	function draw(e)
 	{
-		if(paint){
-
-			addClick(e.touches["0"].pageX - this.offsetLeft, e.touches["0"].pageY - this.offsetTop);
+		if(paint)
+		{
+			addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+			//addClick(e.touches["0"].pageX - this.offsetLeft, e.touches["0"].pageY - this.offsetTop);
 			redraw();
 		}
 	}
