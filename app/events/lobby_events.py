@@ -27,7 +27,8 @@ def checkExistUser(formData):
 
 @socketio.on('playerJoin')
 def playerJoin(message):
-    print "playerJoin "
+    if flask_app.config['LobbyManager'].checkDupUsername(message['room_code'], message['user']):
+            return
     newPlayer = Player.Player(request.sid, message['user'], message['char_select'])
     flask_app.config['LobbyManager'].addPlayer(message['room_code'], newPlayer)
     join_room(message['room_code'])

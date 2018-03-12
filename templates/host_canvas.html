@@ -3,11 +3,11 @@
 		<h1> You should see the competitor's clients here!</h1>
 		<div>
 		    {{ competitor_1 }}
-		    <div id="canvasDiv1" style="margin:0 auto;"></div>
+		    <div id="canvasDiv1" style="background:white; margin:0 auto;"></div>
 		</div>
 		<div>
 		    {{ competitor_2 }}
-		    <div id="canvasDiv2" style="margin:0 auto;"></div>
+		    <div id="canvasDiv2" style="background:white; margin:0 auto;"></div>
 		</div>
         <script>
 			var canvasDiv1;
@@ -27,7 +27,7 @@
 				canvas1.setAttribute('width', canvasWidth);
 				canvas1.setAttribute('height', canvasHeight);
 				canvas1.setAttribute('id', 'canvas1');
-				canvasDiv1.appendChild(canvas);
+				canvasDiv1.appendChild(canvas1);
 				context1 = canvas1.getContext("2d");
 				context1.strokeStyle = "#a52224";
 				context1.lineJoin = "round";
@@ -51,23 +51,21 @@
 
 				function redraw(context, arrX, arrY)
 				{
-					//context2.clearRect(0, 0, context2.canvas.width, context2.canvas.height); // Clears the canvas
-							
 					context.moveTo(arrX[0], arrY[0]);
 					context.lineTo(arrX[1], arrY[1]);
 					context.closePath();
 					context.stroke();
-
 				}
 				socket.on('player1Data', function(json)
 			    {
+			    	console.log("player1");
 			    	redraw(context1, json['sliceClickX'], json['sliceClickY']);
 			    });
 			    socket.on('player2Data', function(json)
 			    {
+			    	console.log("player2");
 			        redraw(context2, json['sliceClickX'], json['sliceClickY']);
 			    });
-				init();
 			});
         </script>
 	</body>
