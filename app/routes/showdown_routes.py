@@ -1,12 +1,13 @@
-from flask import render_template
+from flask import render_template, request
 from .. import flask_app
 
 #Mutable variables like lists/objects can be passed as a reference
 competitors = flask_app.config['competitors']
+lobbyManager = flask_app.config['LobbyManager']
 
 @flask_app.route('/name')
 def name():
-    return render_template('name.html', user=competitors)
+    return render_template('name.html', user=request.cookies.get('roomCode'))
 #Displays a client canvas for a player who needs to draw
 @flask_app.route('/draw', methods=['GET', 'POST'])
 def displayDrawingPhase():
@@ -39,3 +40,17 @@ def queue():
         flask_app.config['players'] += 1
         return render_template('showdown.html')
     return render_template('queue.html')
+
+@flask_app.route('/host', methods=['GET', 'POST'])
+def host():
+    data = request.get_json()
+    game = lobbyManager.getGameManager(data['roomCode'])
+    competitorNames = []
+    #Loop through the current competitors and grab their names
+    for i in range(0, len(game.competitors)):
+        competitorNames.append(game.activePlayers[game.competitors[i]].username)
+    return render_template('host.html', playerOne=competitorNames[0], playerTwo=competitorNames[1]);
+
+@flask_app.route('/showdown', methods=['GET', 'POST'])
+def showdown():
+    return render_template('showdown.html');

@@ -3,7 +3,7 @@
         <title>Login Quick Draw</title>
     </head>
     <body>
-        <h1> Room Code: {{ code }}</h1>
+        <h1> Room Code: <p id="roomCode">{{ code }}</p></h1>
         <button id="StartGame">Start Game</button>
         <button id="Disconnect">Disconnect</button>
         <div class="container">
@@ -35,13 +35,19 @@
         });
         function startGame()
         {
+            var code = '{{code}}'
+            socket.emit('startGame', code);
             $.ajax({
                 type:'POST',
-                url:'/startGame',
+                url:'/host',
+                data: JSON.stringify( {'roomCode' : code }),
+                contentType: 'application/json;charset=UTF-8',
                 success: function(data)
                 {
                     //Do an error check if there isn't enough players
                     $('body').html(data);
+                    
+                    socket.emit('initializePlayers', code)
                 }
             });
         }

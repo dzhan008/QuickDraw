@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, make_response
 from ..classes import *
 from .. import flask_app
 import string
@@ -29,8 +29,11 @@ def login():
     if form.validate_on_submit():
         checkValid = flask_app.config['LobbyManager'] .roomValidation(form.room_code.data, form.name.data)
         if checkValid == 0:
-            return render_template('login.html', user=form.name.data, room_code=form.room_code.data, char_select=form.char_select.data)
+            resp = make_response(render_template('login.html', user=form.name.data, room_code=form.room_code.data, char_select=form.char_select.data))
+            resp.set_cookie('roomCode', form.room_code.data)
+            return resp
         return jsonify(error=checkValid)
+    #Rerender the index html with error messages for the respective fields
     return jsonify(error=4) #error4 is didn't fill out correctly
 
 @flask_app.route('/rejoin', methods=['GET', 'POST'])

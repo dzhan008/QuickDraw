@@ -26,11 +26,7 @@ $(document).ready(function(){
         console.log('Host connected.');
         socket.emit('setHost');
     });
-    
-    socket.on('test_success', function(){
-       console.log("External file test succeeded."); 
-    });
-    
+        
     //Grabs random time from server and starts timer
     socket.on('startTimer', function(msg){
         console.log(msg);
