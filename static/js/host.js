@@ -14,7 +14,7 @@ var maxTime = 10;
 var timeLeft = Math.floor((Math.random() * (maxTime - minTime + 1) + minTime));
 */
 var timeLeft = 0;
-var timer = document.getElementById('Timer');
+var timerTag = '#Timer';
 var timerType = phases.prePhase;
 var timerID;
 var socket;
@@ -34,6 +34,8 @@ $(document).ready(function(){
         timerID = setInterval(countdown, 1000);
         $('#top-text').html("STARTING SHOWDOWN IN");
         $('#press-screen').hide();
+        $('#comp-one-ready').hide();
+        $('#comp-two-ready').hide();
     });
     
     socket.on('displayReady', function(msg) {
@@ -50,11 +52,11 @@ $(document).ready(function(){
     //Stops timer due to false start on one of the client
     socket.on('falseStart', function(){
         clearTimeout(timerID);
-        timer.innerHTML = 'Timer stopped due to false start.';
+        $('#top-text').html('Timer stopped due to false start.');
     });
     
     socket.on('displayRoundWinner', function(msg){
-        $('#Voting').html("The winner is " + msg.data + "!"); 
+        $('#bottom-text').html("The winner is " + msg.data + "!"); 
     });
 
     $("button").mouseup(function(){
@@ -96,7 +98,6 @@ function countdown()
                     
                 });
             }
-            timer.innerHTML = 'Moving to drawing phase!';
             //Start the drawing phase for the clients, and also grab the main real time canvases of both clients
             socket.emit('startDrawing');
             $.ajax({
@@ -108,13 +109,22 @@ function countdown()
                 }
             });
             //Set up timer for the drawing phase
+            $(timerTag).hide() //Hide big timer
+            timerTag = '#top-text' //Move the timer to the top
             timeLeft = MAX_DRAWING_TIME;
             timerID = setInterval(countdown, 1000);
             timerType = phases.drawingPhase;
+            
+            console.log('Setting models...');
+            //Set competitor sprites to drawing
+            //modelOneIndex/modelTwoIndex are from the html file, defined because we need to get the indices from flask first
+            $('#comp-one-model').attr('src', 'static/images/Draw' + modelOneIndex + '.png' );
+            $('#comp-two-model').attr('src', 'static/images/Draw' + modelTwoIndex + '.png');
+            
         } //May have to move this into a new function in the event competitors end earlier
         else if(timerType == phases.drawingPhase)
         {
-            timer.innerHTML = 'Moving to voting phase!';
+            $('#bottom-text').html('Vote for the best drawing!');
             socket.emit('stopDrawing');
             $.ajax({
                 type: "POST",
@@ -141,7 +151,7 @@ function countdown()
     }
     else
     {
-        timer.innerHTML = timeLeft;
+        $(timerTag).html(timeLeft);
         timeLeft--;
     }
 }

@@ -16,7 +16,8 @@ def displayDrawingPhase():
 #Displays the canvases to be changed in real time to the host
 @flask_app.route('/host_canvas', methods=['GET', 'POST'])
 def displayHostCanvas():
-    return render_template('host_canvas.html', competitor_1=competitors[0], competitor_2=competitors[1])
+    return render_template('host_canvas.html', competitor_1=competitors[0], 
+                          competitor_2=competitors[1])
 
 @flask_app.route('/host_voting', methods=['GET', 'POST'])
 def displayHostVoting():
@@ -24,7 +25,8 @@ def displayHostVoting():
 
 @flask_app.route('/client_voting', methods=['GET', 'POST'])
 def displayClientVoting():
-    return render_template('client_voting.html', competitor_1=competitors[0], competitor_2=competitors[1])
+    return render_template('client_voting.html', competitor_1=competitors[0], 
+                          competitor_2=competitors[1])
 
     #Test function to queue a host and two competitors together
 @flask_app.route('/queue')
@@ -45,11 +47,14 @@ def queue():
 def host():
     data = request.get_json()
     game = lobbyManager.getGameManager(data['roomCode'])
-    competitorNames = []
+    competitorObjs = []
     #Loop through the current competitors and grab their names
     for i in range(0, len(game.competitors)):
-        competitorNames.append(game.activePlayers[game.competitors[i]].username)
-    return render_template('host.html', playerOne=competitorNames[0], playerTwo=competitorNames[1]);
+        competitorObjs.append(game.activePlayers[game.competitors[i]])
+    return render_template('host.html', playerOne=competitorObjs[0].username, 
+                          playerTwo=competitorObjs[1].username, 
+                          modelOne=competitorObjs[0].imageIndex,
+                          modelTwo=competitorObjs[1].imageIndex);
 
 @flask_app.route('/showdown', methods=['GET', 'POST'])
 def showdown():
