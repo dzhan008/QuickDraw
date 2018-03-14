@@ -5,6 +5,7 @@ class GameManager:
 		self.host = hostSID #Host client
 		self.activePlayers = [] #Player Object
 		self.dcPlayers = [] #Index
+                self.playersChoose = [] #Index
 		self.competitors = [] #Index
 		self.spectators = [] #sessionIDs
 
@@ -40,5 +41,12 @@ class GameManager:
 			print player.printPlayerInfo()
 
 
-
-
+	def choosePlayers(self):
+                tempmin = 100
+		for player in self.activePlayers:
+			if tempmin > player.gamesPlayed:
+				tempmin = player.gamesPlayed
+		for i in len(activePlayers):
+			if activePlayers[i].gamesPlayed == tempmin:
+				playersChoose.append(i)
+			

@@ -10,6 +10,10 @@ int amount of players = n
 two array (one array for players and one for players games played), int pointer to the first 2 players
 
 ---------------------------------------------------------
+1. Determine players going against each other
+2. putting thse players into the competitors list
+
+
 while (unfair == true)
   if (player 1 games played == 5)
     unfair == false
