@@ -19,6 +19,15 @@ def dcGame(gameCode):
     #take all the people in the room back to the home screen
     #remove the game
 
+@socketio.on('startGame')
+def startGame(gameCode):
+    game = flask_app.config['LobbyManager'].getGameManager(gameCode)
+    game.setCompetitors()
+    competitorSIDs = []
+    for x in range(0, len(game.competitors)):
+         competitorSIDs.append(game.activePlayers[game.competitors[x]].sid)
+    helper.tellGroup('start_showdown', competitorSIDs)
+
 @socketio.on('checkExistUser')
 def checkExistUser(formData):
     print "check exists"
@@ -27,7 +36,8 @@ def checkExistUser(formData):
 
 @socketio.on('playerJoin')
 def playerJoin(message):
-    print "playerJoin "
+    if flask_app.config['LobbyManager'].checkDupUsername(message['room_code'], message['user']):
+            return
     newPlayer = Player.Player(request.sid, message['user'], message['char_select'])
     flask_app.config['LobbyManager'].addPlayer(message['room_code'], newPlayer)
     join_room(message['room_code'])

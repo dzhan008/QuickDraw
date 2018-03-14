@@ -24,7 +24,7 @@ class LobbyManager:
 
 	def getGameManager(self, gameCode):
 		if gameCode in self.GameManagerDict.keys():
-			return GameManagerDict[gameCode]
+			return self.GameManagerDict[gameCode]
 
 	#Adds the player to the GameManager for the room
 	def addPlayer(self, gameCode, playerObj):
@@ -44,7 +44,6 @@ class LobbyManager:
 			if tempName != "":
 				return tempName
 		return ""
-
 
 	def printGameInfo(self):
 		print "------Printing Game Info------"

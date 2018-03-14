@@ -47,15 +47,6 @@ def create_app():
     from events import *
     return flask_app
 
-# @socketio.on('connect')
-# def handle_connect():
-#     clients.append(request.sid)
-
-# @socketio.on('disconnect')
-# def handle_disconnect():
-#     clients.remove(request.sid)
-
-
 @socketio.on('connect')
 def handle_connect():
     clients.append(request.sid)

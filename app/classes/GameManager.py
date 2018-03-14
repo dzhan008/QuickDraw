@@ -1,3 +1,5 @@
+import random
+
 class GameManager:
 	def __init__(self, gameCode, hostSID):
 		#------House keeping-----#
@@ -30,6 +32,12 @@ class GameManager:
 					self.dcPlayers.append(self.activePlayers.index(player))
 				return 1 #return 1 if we found a player
 		return 0
+		
+	#Test function to make  two random players competitors
+	def setCompetitors(self):
+		self.competitors = random.sample(range(0, len(self.activePlayers)), 2);
+		return
+
 	def getNameFromSID(self, playerSID):
 		for player in self.activePlayers:
 			if player.sid == playerSID:

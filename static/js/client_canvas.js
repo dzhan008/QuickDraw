@@ -4,8 +4,8 @@ var canvas;
 var context;
 var canvasWidth = 500;
 var canvasHeight = 700;
-var clickX = new Array();
-var clickY = new Array();
+var prevX = 0;
+var prevY = 0;
 var switchSend = 1;
 
 //Canvas of the other player
@@ -27,21 +27,43 @@ $( document ).ready(function() {
 
 	function start(e)
 	{
-		console.log(e);
 		e.preventDefault();
+		prevX = e.pageX - this.offsetLeft;
+		prevY = e.pageY - this.offsetTop;
 		paint = true;
-		addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-		//addClick(e.touches["0"].pageX - this.offsetLeft, e.touches["0"].pageY - this.offsetTop);
-		redraw();
 	}
 
+	var lastMove = 0;
 	function draw(e)
 	{
-		if(paint)
+		var currX = 0;
+		var currY = 0;
+		if (e.type == "mousemove")
 		{
-			addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-			//addClick(e.touches["0"].pageX - this.offsetLeft, e.touches["0"].pageY - this.offsetTop);
-			redraw();
+			currX = e.pageX - this.offsetLeft;
+			currY = e.pageY - this.offsetTop;
+		}
+		else
+		{
+			currX = e.touches["0"].pageX - this.offsetLeft;
+			currY = e.touches["0"].pageY - this.offsetTop;
+		}
+		if(Date.now() - lastMove > 20) {
+			// Do stuff
+			lastMove = Date.now();
+		
+			if(paint){
+				var sliceClickX = [prevX, currX];
+				var sliceClickY = [prevY, currY];
+				socket.emit('canvasData', {sliceClickX, sliceClickY});
+				context.moveTo(sliceClickX[0], sliceClickY[0]);
+				context.lineTo(sliceClickX[1], sliceClickY[1]);
+				context.closePath();
+				context.stroke();
+				prevX = currX;
+				prevY = currY;
+				//redraw();
+			}
 		}
 	}
 	function stop(e)
@@ -59,42 +81,5 @@ $( document ).ready(function() {
 	    canvas.addEventListener("mouseout",stop,false);
 	}
 
-	function addClick(x, y)
-	{
-	  clickX.push(x);
-	  clickY.push(y);
-	}
-
-	function redraw(){
-		var sliceClickX = clickX.slice(previousSize);
-		var sliceClickY = clickY.slice(previousSize);
-		// console.log(clickX);
-		// console.log(sliceClickX);
-		// console.log("_________");
-		setTimeout(function() {socket.emit('canvasData', {sliceClickX, sliceClickY});}, 3000);
-		previousSize = clickX.length - 1;
-		context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
-
-		context.strokeStyle = "#df4b26";
-		context.lineJoin = "round";
-		context.lineWidth = 5;
-				
-		for(var i=0; i < clickX.length; i++) {		
-			context.beginPath();
-			if(i)
-			{
-				context.moveTo(clickX[i-1], clickY[i-1]);
-			}
-			else
-			{
-			   context.moveTo(clickX[i]-1, clickY[i]);
-			}
-			context.lineTo(clickX[i], clickY[i]);
-			context.closePath();
-			context.stroke();
-		}
-
-
-	}
 	init();
 });

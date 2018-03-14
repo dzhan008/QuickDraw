@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, make_response
 from ..classes import *
 from .. import flask_app
 import string
@@ -27,19 +27,14 @@ def login():
     form = forms.LoginForm(request.values)
     #Validate the input based off of the LoginForm class
     if form.validate_on_submit():
-        #Put information of room into firebase
-        #putData = {'Room Code' : form.room_code.data, 'Name' : form.name.data }
         checkValid = flask_app.config['LobbyManager'] .roomValidation(form.room_code.data, form.name.data)
         if checkValid == 0:
-            return render_template('login.html', user=form.name.data, room_code=form.room_code.data, char_select=form.char_select.data)
+            resp = make_response(render_template('login.html', user=form.name.data, room_code=form.room_code.data, char_select=form.char_select.data))
+            resp.set_cookie('roomCode', form.room_code.data)
+            return resp
         return jsonify(error=checkValid)
-        #firebase.put('/rooms', str(form.room_code.data), putData)
-        #data = firebase.get('/rooms/ABCD/Name', None)
-        #Render a sample html file that displays the username and room code
-        #return jsonify (data={'message': 'Hello {}'.format(form.name.data)})
     #Rerender the index html with error messages for the respective fields
     return jsonify(error=4) #error4 is didn't fill out correctly
-    #return render_template('join.html', title='Home', form=form)
 
 @flask_app.route('/rejoin', methods=['GET', 'POST'])
 def rejoin():

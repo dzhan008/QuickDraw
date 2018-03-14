@@ -47,14 +47,12 @@ html
 
 .modelOne
 {
-    content: url(../images/Idle0.png);
     margin-bottom: 5%;
-    transform: scaleX(-1); /*HAndles flipping the image of the left player */
+    transform: scaleX(-1); /*Handles flipping the image of the left player */
 }
 
 .modelTwo
 {
-    content: url(../images/Idle1.png);
     margin-bottom: 5%;
 }
 
