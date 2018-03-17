@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, session
 from flask_socketio import send, emit, join_room, leave_room
 from .. import flask_app, socketio
 from ..classes import helper
@@ -18,6 +18,15 @@ def dcGame(gameCode):
     return
     #take all the people in the room back to the home screen
     #remove the game
+
+@socketio.on('startGame')
+def startGame(gameCode):
+    game = flask_app.config['LobbyManager'].getGameManager(gameCode)
+    game.setCompetitors()
+    competitorSIDs = []
+    for x in range(0, len(game.competitors)):
+         competitorSIDs.append(game.activePlayers[game.competitors[x]].sid)
+    helper.tellGroup('start_showdown', competitorSIDs)
 
 @socketio.on('checkExistUser')
 def checkExistUser(formData):
@@ -39,7 +48,7 @@ def playerJoin(message):
         print "Error in finding hostSID in playerJoin"
         return
     emit('playerJoin', {'username': message['user'], 'charIndex': message['char_select']}, room=hostSID)
-    emit('serverMsg', message['user'] + " has joined", room=message['room_code'])
+    emit('serverMsg', flask_app.config['LobbyManager'].UsersDict[request.sid] + " has joined", room=message['room_code'])
 
 @socketio.on('playerLeave')
 def playerLeave(message):

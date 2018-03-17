@@ -45,6 +45,19 @@
             	});
             }
         });
+		socket.on('start_showdown', function()
+        {
+            $.ajax(
+            {
+            	type:'POST',
+            	url: '/showdown',
+            	success: function(data)
+            	{
+            		console.log(data);
+            		$('body').html(data);
+            	}
+            });
+        });
 	</script>
 </html>
 

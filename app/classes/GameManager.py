@@ -1,3 +1,6 @@
+import random
+import Player
+
 class GameManager:
 	def __init__(self, gameCode, hostSID):
 		#------House keeping-----#
@@ -9,6 +12,8 @@ class GameManager:
 		self.spectators = [] #sessionIDs
 
 		#-----Game Info-----#
+                self.isFair = False
+                self.gameEnd = False
 		self.roundCount = 0
 		self.roundMax = 0
 		self.state = 1 #1=Lobby 2=Showdown 3=Vote
@@ -29,6 +34,26 @@ class GameManager:
 					self.dcPlayers.append(self.activePlayers.index(player))
 				return 1 #return 1 if we found a player
 		return 0
+		
+	#Test function to make  two random players competitors
+	def setCompetitors(self):
+		self.competitors = random.sample(range(0, len(self.activePlayers)), 2);
+		return
+
+	def getCompetitorSIDs(self):
+		competitorSIDs  = []
+		for i in range(0, len(self.competitors)):
+			competitorSIDs.append(self.activePlayers[self.competitors[i]].sid)
+		return competitorSIDs
+
+	#Get SIDs of non active players and spectators
+	def getAudienceSIDs(self):
+		audience = []
+		for i in range(0, len(self.activePlayers)):
+			if(i not in self.competitors):
+				audience.append(self.activePlayers[i].sid)
+		return audience + self.spectators
+
 	def getNameFromSID(self, playerSID):
 		for player in self.activePlayers:
 			if player.sid == playerSID:
@@ -40,5 +65,54 @@ class GameManager:
 			print player.printPlayerInfo()
 
 
+	def choosePlayers(self):
+                self.playersChoose = []
+                tempmin = 100
+		for player in self.activePlayers:
+			if tempmin > player.gamesPlayed:
+				tempmin = player.gamesPlayed
+                                print ("tempmin: %d", tempmin)
+		for i in range(len(self.activePlayers)):
+			if self.activePlayers[i].gamesPlayed == tempmin:
+				self.playersChoose.append(i)
+				print ("\nPlayers in queue: ")
+				print (self.activePlayers[i].username)
+	
+                if len(self.playersChoose) == 1:
+			tempmin = tempmin + 1
+			for i in range(len(self.activePlayers)):
+				if self.activePlayers[i].gamesPlayed == tempmin:
+					self.playersChoose.append(i)
+                                        print ("\nPlayers in queue(len(1)): ")
+					print (self.activePlayers[i].username)
+	
+	def createDummyChars(self):
+                x = 1
+		for i in range(0, 8):
+			temp = Player.Player(i, i, 0)
+                        if i > 1:
+				x = 2
+                        if i > 3:
+				x = 3
+                        temp.gamesPlayed = x
+			self.addPlayer(temp)			
+                        print(self.gameEnd)
+	
+	def validateEndGame(self):
+                temp = self.activePlayers[0].gamesPlayed
+		for i in range(len(self.activePlayers)):
+			if self.activePlayers[i].gamesPlayed == 4:
+				self.gameEnd = True
+		for i in range(len(self.activePlayers)):
+			if self.activePlayers[i].gamesPlayed == temp:
+				self.isFair = True
+			else:
+				self.isFair = False
+		if self.isFair == True:
+			if self.activePlayers[0].gamesPlayed > 1:
+				self.gameEnd = True
+			else:
+				self.gameEnd = False
+		return self.gameEnd
 
 
