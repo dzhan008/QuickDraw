@@ -1,0 +1,52 @@
+html
+{
+    margin: 0;
+}
+body
+{
+    margin: 0;
+	padding: 0;
+	min-width: 100%;
+	min-height: 100%;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	background-position: center;
+	position: relative;
+}
+.home
+{
+	background-image:url('/static/images/GameBackground.png');
+}
+.lobby
+{
+	background-image: url('/static/images/LobbyBackground.png');
+}
+
+.playerContainer
+{
+	bottom: 50px;
+	margin: auto;
+	position: absolute;
+  	left: 0;
+  	right: 0;
+}
+
+.col-md-1-5
+{
+	width: 12.5%;
+	-webkit-box-flex: 0;
+    -ms-flex: 0 0 12.5%;
+    flex: 0 0 12.5%;
+    max-width: 12.5%;
+    -webkit-transition: all .5s ease;
+    -moz-transition: all .5s ease;
+    -o-transition: all .5s ease;
+    transition: all 5s ease;
+}
+.marginTOP
+{
+	margin-top: 50px;	
+
+}

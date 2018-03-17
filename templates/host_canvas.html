@@ -15,7 +15,7 @@
 			var context1;
 			var canvasWidth = 500;
 			var canvasHeight = 700;
-
+			
 			var canvasDiv2;
 			var canvas2;
 			var context2;
@@ -58,12 +58,10 @@
 				}
 				socket.on('player1Data', function(json)
 			    {
-			    	console.log("player1");
 			    	redraw(context1, json['sliceClickX'], json['sliceClickY']);
 			    });
 			    socket.on('player2Data', function(json)
 			    {
-			    	console.log("player2");
 			        redraw(context2, json['sliceClickX'], json['sliceClickY']);
 			    });
 			});

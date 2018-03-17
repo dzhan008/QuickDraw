@@ -3,10 +3,10 @@
         <title>Login Quick Draw</title>
     </head>
     <body>
-        <h1> Room Code: {{ code }}</h1>
+        <p> Room Code: {{ code }}</p>
         <button id="StartGame">Start Game</button>
         <button id="Disconnect">Disconnect</button>
-        <div class="container">
+        <div class="container playerContainer">
             <div class="row" id="playerList">
             </div>
         </div>
@@ -14,7 +14,6 @@
         </ul> -->
     </body>
     <script>
-        var alternateAlign = 1;
         $(document).ready(function()
         {
             //console.log('+{{code}});
@@ -47,7 +46,6 @@
         }
         function disconnect()
         {
-
             $.ajax({
                 type:'POST',
                 url:'/index',
@@ -68,23 +66,16 @@
             var playerList = document.getElementById('playerList');
             var col = document.createElement('div');
             col.setAttribute('id', msg['username']);
-            col.className = 'col-md-2 ';
-            if (alternateAlign)
-            {
-                col.className += 'align-self-start';
-                alternateAlign = 0;
-            }
-            else 
-            {
-                col.className += 'align-self-center';
-                alternateAlign = 1;
-            }
+            col.className = 'col-md-1 col-md-1-5 ';
+            var prevMarginTop = $('#playerList').children().last().hasClass('marginTOP');
+            if (!prevMarginTop)
+                col.className += 'marginTOP';
             var img = document.createElement('img');
             img.src = "static/images/Idle" + msg['charIndex'] + '.png';
             img.className = 'charLobby';
             col.appendChild(img);
             col.appendChild(document.createTextNode(msg['username']));
-            col.style.cssText = "left:-800px";
+            col.style.cssText = "left:-1500px";
             playerList.appendChild(col);
             $(col).animate({'left': 0}, 1000);
             //$(playerList).hide().fadeIn(1000);
@@ -96,7 +87,23 @@
         });
         socket.on('playerLeave', function(msg)
         {
-            console.log(msg);
+            $('#' + msg).animate({'left':'-1500px'}, 1000);
+            var hasMargin = $('#' + msg).hasClass("marginTOP");
+            var nextSiblings = $('#' + msg).nextAll();
+            if (nextSiblings.length != 0)
+            {
+                var i = 0 ;
+                while (i < nextSiblings.length)
+                {
+                    if (hasMargin)
+                        {$(nextSiblings[i]).addClass('marginTOP');
+                    else
+                        $(nextSiblings[i]).removeClass('marginTOP');                   
+                    hasMargin = !hasMargin;
+                    i++;
+                }
+            }
+            
             $('#' + msg).remove();
         });
     </script>

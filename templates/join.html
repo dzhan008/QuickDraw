@@ -5,30 +5,30 @@
         </script>
 	</head>
 	<body id="Main">
-		<h1> Quick Draw!</h1>
-        <form action="/index" method="post">
+		<p align="center">Quick Draw!</p><br>
+        <form style="align-content: center;margin:0 auto;" action="/index" method="post">
             {{ form.hidden_tag() }}
-            <p>
+            <p align="center">
                 {{ form.room_code.label }}<br>
                 {{ form.room_code(size=32) }}<br>
                 {% for error in form.room_code.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </p>
-            <p>
+            <p align="center">
                 {{ form.name.label }}<br>
                 {{ form.name(size=32) }}<br>
                 {% for error in form.name.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </p>
-            <p>
+            <p align="center">
                 {{ form.char_select.label }}<br>
                 {{ form.char_select(size=5) }}<br>
             </p>
-            <p>
-                <input type="button" id="player" value="Join as Player"/>
-                <input type="button" id="spectator" value="Join as Spectator"/>
+            <p align="center">
+                <button type="button" class="btn btn-success" id="player">Join as Player</button>
+                <button type="button" class="btn btn-primary" id="spectator">Join as Spectator</button>
             </p>
         </form>
         
@@ -86,11 +86,10 @@
                 });
             }
         });
-        // $('#player').unbind().click(function (e) {
-        //     e.stopPropagation();
-        //     playerAction();           
-        // });
-        $("#player").on("click touchstart", function(e){
+        $('#player').click(function (e) {
+            playerAction(e);           
+        });
+        $("#player").on("touchstart", function(e){
             playerAction(e);
         });
         $('#spectator').click(function (e) {

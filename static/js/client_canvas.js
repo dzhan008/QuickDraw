@@ -43,12 +43,12 @@ $( document ).ready(function() {
 			currX = e.pageX - this.offsetLeft;
 			currY = e.pageY - this.offsetTop;
 		}
-		else
+		else //touch event
 		{
 			currX = e.touches["0"].pageX - this.offsetLeft;
 			currY = e.touches["0"].pageY - this.offsetTop;
 		}
-		if(Date.now() - lastMove > 20) {
+		if(Date.now() - lastMove > 30) {
 			// Do stuff
 			lastMove = Date.now();
 		

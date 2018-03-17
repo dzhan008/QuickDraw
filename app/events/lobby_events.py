@@ -23,6 +23,8 @@ def dcGame(gameCode):
 def checkExistUser(formData):
     print "check exists"
     gameState =  flask_app.config['LobbyManager'].checkExistingPlayer(formData['room_code'], formData['user'], request.sid)
+    if (gameState == 1):
+        gameState = 0; 
     emit('playerState', gameState, room=request.sid)
 
 @socketio.on('playerJoin')
