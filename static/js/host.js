@@ -20,7 +20,6 @@ var timerID;
 var socket;
 
 $(document).ready(function(){
-    
     socket = io.connect('http://' + document.domain + ':' + location.port );
     socket.on('connect', function() {
         console.log('Host connected.');
@@ -85,12 +84,14 @@ function countdown()
     {
         //Turns off timer
         clearTimeout(timerID);
-        
+        var roomCode = $('#roomCode').html();
+        console.log(roomCode);
         if(timerType == phases.prePhase)
         {
             //Create an audio object/promise and play it
             var audio = new Audio('static/audio/Cow.mp3');
             var playPromise = audio.play();
+
             if(playPromise !== undefined) {
                 playPromise.then(function() {
                     
@@ -103,6 +104,8 @@ function countdown()
             $.ajax({
                 type: "POST",
                 url: '/host_canvas',
+                data: JSON.stringify( {'roomCode' : $('#roomCode').html() }),
+                contentType: 'application/json;charset=UTF-8',
                 success: function (data) {
                     console.log(data)  // display the returned data in the console.
                     $('#Canvas').html(data);
@@ -114,7 +117,6 @@ function countdown()
             timeLeft = MAX_DRAWING_TIME;
             timerID = setInterval(countdown, 1000);
             timerType = phases.drawingPhase;
-            
             console.log('Setting models...');
             //Set competitor sprites to drawing
             //modelOneIndex/modelTwoIndex are from the html file, defined because we need to get the indices from flask first

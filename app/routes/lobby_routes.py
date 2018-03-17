@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, make_response
+from flask import render_template, request, jsonify, make_response, session
 from ..classes import *
 from .. import flask_app
 import string
@@ -30,7 +30,6 @@ def login():
         checkValid = flask_app.config['LobbyManager'] .roomValidation(form.room_code.data, form.name.data)
         if checkValid == 0:
             resp = make_response(render_template('login.html', user=form.name.data, room_code=form.room_code.data, char_select=form.char_select.data))
-            resp.set_cookie('roomCode', form.room_code.data)
             return resp
         return jsonify(error=checkValid)
     #Rerender the index html with error messages for the respective fields

@@ -8,7 +8,6 @@ class GameManager:
 		self.host = hostSID #Host client
 		self.activePlayers = [] #Player Object
 		self.dcPlayers = [] #Index
-                self.playersChoose = [] #Index
 		self.competitors = [] #Index
 		self.spectators = [] #sessionIDs
 
@@ -40,6 +39,20 @@ class GameManager:
 	def setCompetitors(self):
 		self.competitors = random.sample(range(0, len(self.activePlayers)), 2);
 		return
+
+	def getCompetitorSIDs(self):
+		competitorSIDs  = []
+		for i in range(0, len(self.competitors)):
+			competitorSIDs.append(self.activePlayers[self.competitors[i]].sid)
+		return competitorSIDs
+
+	#Get SIDs of non active players and spectators
+	def getAudienceSIDs(self):
+		audience = []
+		for i in range(0, len(self.activePlayers)):
+			if(i not in self.competitors):
+				audience.append(self.activePlayers[i].sid)
+		return audience + self.spectators
 
 	def getNameFromSID(self, playerSID):
 		for player in self.activePlayers:
@@ -101,3 +114,5 @@ class GameManager:
 			else:
 				self.gameEnd = False
 		return self.gameEnd
+
+
