@@ -1,4 +1,5 @@
 import random
+import Player
 
 class GameManager:
 	def __init__(self, gameCode, hostSID):
@@ -12,6 +13,8 @@ class GameManager:
 		self.spectators = [] #sessionIDs
 
 		#-----Game Info-----#
+                self.isFair = False
+                self.gameEnd = False
 		self.roundCount = 0
 		self.roundMax = 0
 		self.state = 1 #1=Lobby 2=Showdown 3=Vote
@@ -50,11 +53,51 @@ class GameManager:
 
 
 	def choosePlayers(self):
+                self.playersChoose = []
                 tempmin = 100
 		for player in self.activePlayers:
 			if tempmin > player.gamesPlayed:
 				tempmin = player.gamesPlayed
-		for i in len(activePlayers):
-			if activePlayers[i].gamesPlayed == tempmin:
-				playersChoose.append(i)
-			
+                                print ("tempmin: %d", tempmin)
+		for i in range(len(self.activePlayers)):
+			if self.activePlayers[i].gamesPlayed == tempmin:
+				self.playersChoose.append(i)
+				print ("\nPlayers in queue: ")
+				print (self.activePlayers[i].username)
+	
+                if len(self.playersChoose) == 1:
+			tempmin = tempmin + 1
+			for i in range(len(self.activePlayers)):
+				if self.activePlayers[i].gamesPlayed == tempmin:
+					self.playersChoose.append(i)
+                                        print ("\nPlayers in queue(len(1)): ")
+					print (self.activePlayers[i].username)
+	
+	def createDummyChars(self):
+                x = 1
+		for i in range(0, 8):
+			temp = Player.Player(i, i, 0)
+                        if i > 1:
+				x = 2
+                        if i > 3:
+				x = 3
+                        temp.gamesPlayed = x
+			self.addPlayer(temp)			
+                        print(self.gameEnd)
+	
+	def validateEndGame(self):
+                temp = self.activePlayers[0].gamesPlayed
+		for i in range(len(self.activePlayers)):
+			if self.activePlayers[i].gamesPlayed == 4:
+				self.gameEnd = True
+		for i in range(len(self.activePlayers)):
+			if self.activePlayers[i].gamesPlayed == temp:
+				self.isFair = True
+			else:
+				self.isFair = False
+		if self.isFair == True:
+			if self.activePlayers[0].gamesPlayed > 1:
+				self.gameEnd = True
+			else:
+				self.gameEnd = False
+		return self.gameEnd
