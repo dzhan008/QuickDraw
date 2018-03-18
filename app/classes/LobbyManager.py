@@ -38,7 +38,7 @@ class LobbyManager:
 	def removePlayer(self, sid):
 		for game in self.GameManagerDict.values():
 			if game.removePlayer(sid):
-				UsersDict.pop(sid, None)
+				self.UsersDict.pop(sid, None)
 				self.printGameInfo()
 				return game.host
 		return 0
@@ -96,8 +96,3 @@ class LobbyManager:
 					player.sid = newSid
 					return self.GameManagerDict[gameCode].state
 		return 0
-
-	
-
-	
-	

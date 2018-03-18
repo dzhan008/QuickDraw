@@ -23,6 +23,10 @@ body
 {
 	background-image: url('/static/images/LobbyBackground.png');
 }
+.scoreboard
+{
+    background-image: url('/static/images/ScoreBackground.png');
+}
 
 .playerContainer
 {

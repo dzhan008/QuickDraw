@@ -1,0 +1,18 @@
+.scoreboard
+{
+    font-size: 23pt;
+    font-weight: bold;
+}
+
+.row-spaced
+{
+    margin-top: 5%;
+    border: black thin solid;
+    background-color: #f45642;
+}
+
+.col-border-mid
+{
+    border-left: black thin solid;
+    border-right: black thin solid;
+}

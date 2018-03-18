@@ -29,6 +29,7 @@ def create_app():
 #This secret key is used for authentication purposes, mainly needed for WtForms
     flask_app.config['SECRET_KEY'] = "cs-179-quick-draw"
     #Assign variables to config object
+    flask_app.config['debug'] = 0
     flask_app.config['competitors'] = competitors
     flask_app.config['players'] = players
     flask_app.config['playersReady'] = playersReady

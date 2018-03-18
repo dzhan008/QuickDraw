@@ -50,7 +50,7 @@
             $.ajax(
             {
             	type:'POST',
-            	url: '/showdown',
+            	url: '/client_showdown',
             	success: function(data)
             	{
             		console.log(data);
@@ -58,6 +58,20 @@
             	}
             });
         });
+        
+        socket.on('votingPhase', function() {
+        $.ajax({
+            type: "POST",
+            url: '/client_voting',
+            data: JSON.stringify( {'roomCode' : '{{room_code}}' }),
+            contentType: 'application/json;charset=UTF-8',
+            success: function (data) {
+                console.log(data)  // display the returned data in the console.
+                $('body').html(data);
+            }
+        });
+            
+    });
 	</script>
 </html>
 

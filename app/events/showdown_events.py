@@ -7,45 +7,38 @@ competitors = flask_app.config['competitors']
 spectators = flask_app.config['spectators']
 lobbyManager = flask_app.config['LobbyManager']
 
-@socketio.on('setHost')
-def setHost():
-    flask_app.config['host'] = request.sid
-
-@socketio.on('setCompetitor')
-def setCompetitor():
-    competitors.append(request.sid)
-
 @socketio.on('setSpectator')
 def setSpectator():
     spectators.append(request.sid)
 
 @socketio.on('ready')
 def ready():
-    playerReady = ""
+    playerReady = ''
     game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+    players = game.activePlayers
     competitorSIDs = game.getCompetitorSIDs()
-    flask_app.config['playersReady'] += 1
     #Check which player readied to display to host
     if request.sid == competitorSIDs[0]:
         playerReady = 'one'
+        players[game.competitors[0]].ready = True
     elif request.sid == competitorSIDs[1]:
         playerReady = 'two'
+        players[game.competitors[1]].ready = True
 
     emit('displayReady', {'data' : playerReady}, room=game.host)
-    helper.tellGroupWithData('displayready', flask_app.config['playersReady'], competitorSIDs)
-    if flask_app.config['playersReady'] == 2:
+    if players[game.competitors[0]].ready == True and players[game.competitors[1]].ready == True:
+        players[game.competitors[0]].ready = False
+        players[game.competitors[1]].ready = False
         x = helper.generateSuspenseTime()
         flask_app.config['showdown'] = True
         emit('startTimer', {'data': x}, room=game.host)
 
 @socketio.on('unready')
 def unready():
-
-    global showdown
     game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+    players = game.activePlayers
     competitorSIDs = game.getCompetitorSIDs()
     playerUnready = ''
-    flask_app.config['playersReady'] -= 1
     #Player let go early!
     if flask_app.config['showdown'] == True:
         helper.tellGroup('falseStart', competitors)
@@ -54,12 +47,13 @@ def unready():
         flask_app.config['showdown'] = False
     #Check which player unreadied to display to host
     if request.sid == competitorSIDs[0]:
+        players[game.competitors[0]].ready = False
         playerUnready = 'one'
     elif request.sid == competitorSIDs[1]:
+        players[game.competitors[0]].ready = False
         playerUnready = 'two'
 
     emit('displayUnready', {'data' : playerUnready}, room=game.host)
-    helper.tellGroupWithData('displayready', flask_app.config['playersReady'], competitorSIDs)
 
 #Starting Phase Events
 
@@ -96,11 +90,12 @@ def choiceTwo():
 @socketio.on('calcRoundWinner')
 def calcRoundWinner():
     game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
-    competitorSIDs = game.getCompetitorSIDs()
     if flask_app.config['playerOneVotes'] > flask_app.config['playerTwoVotes']:
-        emit('displayRoundWinner', { 'data': competitorSIDs[0] }, room=game.host)
+        game.activePlayers[game.competitors[0]].points += 1;
+        emit('displayRoundWinner', { 'data': game.activePlayers[game.competitors[0]].username }, room=game.host)
     elif flask_app.config['playerTwoVotes'] > flask_app.config['playerOneVotes']:
-        emit('displayRoundWinner', { 'data' : competitorSIDs[1] }, room=game.host)
+        game.activePlayers[game.competitors[1]].points += 1;
+        emit('displayRoundWinner', { 'data' : game.activePlayers[game.competitors[1]].username }, room=game.host)
     else:
         emit('displayRoundWinner', { 'data' : 'No One'}, room=game.host)
 

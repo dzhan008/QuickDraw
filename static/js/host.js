@@ -1,11 +1,20 @@
-const MAX_DRAWING_TIME = 5;
-const MAX_VOTING_TIME = 10;
+var timeLeft = 0;
+var timerTag = '#Timer';
 const phases = Object.freeze( 
 {
     prePhase: 0,
     drawingPhase: 1,
     votingPhase: 2,
+    scoreboardPhase: 3
 });
+var timerType = phases.prePhase;
+var timerID;
+var roomCode;
+
+var MAX_VOTING_TIME = 5;
+var MAX_DRAWING_TIME = 5;
+
+
 
 //Old clientside code for randomly setting a time, not sure if better to do it clientside than serverside
 /*
@@ -13,17 +22,12 @@ var minTime = 2;
 var maxTime = 10;
 var timeLeft = Math.floor((Math.random() * (maxTime - minTime + 1) + minTime));
 */
-var timeLeft = 0;
-var timerTag = '#Timer';
-var timerType = phases.prePhase;
-var timerID;
-var socket;
 
 $(document).ready(function(){
-    socket = io.connect('http://' + document.domain + ':' + location.port );
+    
+    roomCode = $('#roomCode').html();
     socket.on('connect', function() {
         console.log('Host connected.');
-        socket.emit('setHost');
     });
         
     //Grabs random time from server and starts timer
@@ -31,7 +35,9 @@ $(document).ready(function(){
         console.log(msg);
         timeLeft = parseInt(msg.data);
         timerID = setInterval(countdown, 1000);
+        timerTag = '#Timer';
         $('#top-text').html("STARTING SHOWDOWN IN");
+        $(timerTag).show();
         $('#press-screen').hide();
         $('#comp-one-ready').hide();
         $('#comp-two-ready').hide();
@@ -84,8 +90,6 @@ function countdown()
     {
         //Turns off timer
         clearTimeout(timerID);
-        var roomCode = $('#roomCode').html();
-        console.log(roomCode);
         if(timerType == phases.prePhase)
         {
             //Create an audio object/promise and play it
@@ -147,13 +151,67 @@ function countdown()
         }
         else if(timerType == phases.votingPhase)
         {
-            socket.emit('calcRoundWinner');
             //Do some emit to find out the winner from the server and display it.
+            socket.emit('calcRoundWinner');
+            $('.overlay').animate({
+                opacity: 1,
+            }, 1000, function() {
+            });
+            //Set up timer for the voting phase
+            timeLeft = 1;
+            timerID = setInterval(countdown, 1000);
+            timerType = phases.scoreboardPhase;
+        }
+        else if(timerType == phases.scoreboardPhase)
+        {
+            $.ajax({
+                type:'POST',
+                url:'/host_scoreboard',
+                data: JSON.stringify( {'roomCode' : roomCode }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(data)
+                {
+                    $('body').removeClass('home');
+                    $('body').addClass('scoreboard');
+                    $('#showdown').html(data);
+                    $('.overlay').animate({
+                        opacity: 0,
+                    }, 1000, function() {
+                        // Animation complete.
+                    });
+                }
+            });
+            timeLeft = 5;
+            timerID = setInterval(countdown, 1000);
+            timerType = phases.transitionPhase;
+        }
+        else if(timerType == phases.transitionPhase)
+        {
+            console.log(roomCode);
+            $.ajax({
+                type:'POST',
+                url:'/host_showdown',
+                data: JSON.stringify( {'roomCode' : roomCode }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(data)
+                {
+                    //Do an error check if there isn't enough players
+                    $('body').html(data);
+                    $('body').removeClass('scoreboard');
+                    $('body').addClass('home');
+                    $('#roomCode').html(roomCode);
+                }
+            });
+            //Start the new round here.
+            timerType = phases.prePhase;
         }
     }
     else
     {
-        $(timerTag).html(timeLeft);
+        if(timerType == phases.prePhase || timerType == phases.drawingPhase || timerType == phases.votingPhase)
+        {
+            $(timerTag).html(timeLeft);    
+        }
         timeLeft--;
     }
 }

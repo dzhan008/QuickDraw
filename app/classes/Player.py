@@ -8,6 +8,7 @@ class Player:
 		self.highestVote = 0
 		self.points = 0
 		self.gamesPlayed = 0
+		self.ready = False
 
 	def resetStats(self):
 		self.totalLikes = 0

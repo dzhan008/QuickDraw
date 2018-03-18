@@ -1,14 +1,10 @@
 var inGame = false;
 var displayText = document.getElementById('MainText');
 var prompt = "";
-var socket;
 $(document).ready(function(){
-
-    socket = io.connect('http://' + document.domain + ':' + location.port );
-    
+   
     socket.on('connect', function() {
         console.log('Competitor connected.');
-        socket.emit('setCompetitor');
     });
 
 //Provides a display of how many players are ready.
@@ -67,7 +63,7 @@ function handleUnready()
     if(inGame) {
         $.ajax({
             type: "POST",
-            url: '/draw',
+            url: '/client_draw',
             //data: JSON.stringify( {'num' : '0', 'hi' : 'baka'} ) , //NEW
             //contentType: 'application/json;charset=UTF-8', //NEW
             success: function (data) {

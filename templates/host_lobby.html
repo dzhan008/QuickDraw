@@ -3,7 +3,6 @@
         <title>Login Quick Draw</title>
     </head>
     <body>
-        <p> Room Code: {{ code }}</p>
         <h1> Room Code: <p id="roomCode">{{ code }}</p></h1>
         <button id="StartGame">Start Game</button>
         <button id="Disconnect">Disconnect</button>
@@ -39,15 +38,16 @@
             socket.emit('startGame', code);
             $.ajax({
                 type:'POST',
-                url:'/host',
+                url:'/host_showdown',
                 data: JSON.stringify( {'roomCode' : code }),
                 contentType: 'application/json;charset=UTF-8',
                 success: function(data)
                 {
                     //Do an error check if there isn't enough players
                     $('body').html(data);
-                    
-                    socket.emit('initializePlayers', code)
+                    $('#roomCode').html(code);
+                    $('body').removeClass('lobby');
+                    $('body').addClass('home');
                 }
             });
         }
@@ -103,7 +103,7 @@
                 while (i < nextSiblings.length)
                 {
                     if (hasMargin)
-                        {$(nextSiblings[i]).addClass('marginTOP');
+                        $(nextSiblings[i]).addClass('marginTOP');
                     else
                         $(nextSiblings[i]).removeClass('marginTOP');                   
                     hasMargin = !hasMargin;

@@ -1,0 +1,78 @@
+<html>
+
+    <head>
+        <title>Quick Draw</title>        
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <!-- Style Sheets --->
+        <link href="{{ url_for('static', filename='css/scoreboard.css') }}" rel="stylesheet">
+        <link href="../static/css/scoreboard.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    </head>
+    
+    <body style="background-image:url(../static/images/ScoreBackground.png); background-size: cover;">
+        <div class="container">
+            <div class="scoreboard">
+                <div class="col-sm-5" id="inner-board">
+                    <!-- Example Code to Test out Styling -->
+                    <!--
+                    <div class="row row-spaced">
+                        <div class="col-sm-1">1</div>
+                        <div class="col-sm-9 col-border-mid">Penquynh</div>
+                        <div class="col-sm-2">150</div>
+                    </div>
+                    <div class="row row-spaced">
+                        <div class="col-sm-1">2</div>
+                        <div class="col-sm-9 col-border-mid">Growlithe</div>
+                        <div class="col-sm-2">100</div>
+                    </div>
+                    <div class="row row-spaced">
+                        <div class="col-sm-1">2</div>
+                        <div class="col-sm-9 col-border-mid">Xolti</div>
+                        <div class="col-sm-2">0</div>
+                    </div> -->
+                </div>
+                <!--Reference of the other side of the page -->
+                <div class="col-sm-7">
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+</html>
+
+<script>
+    var playerData = '{{data | tojson}}';
+    playerData = JSON.parse(playerData);
+    playerData.sort(function(a, b) {
+       return b.score - a.score; 
+    });
+    
+    var num = 1;
+    for(var i in playerData)
+    {
+        //Create elements for a row of player information
+        var row = $("<div></div>").addClass("row row-spaced");
+        var place = $("<div></div>").addClass("col-sm-1");
+        var playerName = $("<div></div>").addClass("col-sm-9 col-border-mid");
+        var score = $("<div></div>").addClass("col-sm-2");
+        place.text(num.toString());
+        playerName.text(playerData[i].name);
+        score.text(playerData[i].score);
+        
+        row.append(place);
+        row.append(playerName);
+        row.append(score);
+        
+        $('#inner-board').append(row);
+        num += 1;
+    }
+
+</script>
+
+
+
+
