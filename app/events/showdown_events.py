@@ -104,3 +104,9 @@ def calcRoundWinner():
     else:
         emit('displayRoundWinner', { 'data' : 'No One'}, room=game.host)
 
+    #TODO: CHANGE FLASK_APP CONFIG AND ADD CASES FOR IF GAME IS OVER
+    if game.roundCount == game.roundMax:
+        emit('endGame', room=game.host)
+    else:
+        emit('displayScoreboard', room=game.host)
+        game.roundCount += 1

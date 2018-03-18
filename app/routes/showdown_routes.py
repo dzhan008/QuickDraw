@@ -77,3 +77,10 @@ def displayScoreboard():
     data = request.get_json()
     game = lobbyManager.getGameManager(data['roomCode'])
     return render_template('host_scoreboard.html', data=game.getPlayerPoints())
+
+@flask_app.route('/host_finale', methods=['GET', 'POST'])
+def displayFinale():
+    data = request.get_json()
+    game = lobbyManager.getGameManager(data['roomCode'])
+    winner = game.getWinner()
+    return render_template('host_finale.html', username=winner.username, imageIndex=winner.imageIndex) #GET STATS FROM GAME

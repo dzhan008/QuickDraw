@@ -5,7 +5,8 @@ const phases = Object.freeze(
     prePhase: 0,
     drawingPhase: 1,
     votingPhase: 2,
-    scoreboardPhase: 3
+    scoreboardPhase: 3,
+    endPhase: 4
 });
 var timerType = phases.prePhase;
 var timerID;
@@ -67,6 +68,19 @@ $(document).ready(function(){
     socket.on('displayRoundWinner', function(msg){
         $('#bottom-text').html("The winner is " + msg.data + "!"); 
     });
+    
+    socket.on('displayScoreboard', function(){
+        //Set up timer for the scoreboard transition
+        timeLeft = 1;
+        timerID = setInterval(countdown, 1000);
+        timerType = phases.scoreboardPhase;
+    });
+    
+    socket.on('endGame', function(){
+        timeLeft = 1;
+        timerID = setInterval(countdown, 1000);
+        timerType = phases.endPhase;
+    });
 
     $("button").mouseup(function(){
         var url = "{{ url_for('draw') }}"; // send the form data here.
@@ -87,6 +101,23 @@ $(document).ready(function(){
     
 });
 
+function fade()
+{
+    $('.overlay').animate({
+            opacity: 1,
+        }, 1000, function() {
+    });
+
+}
+
+function unfade()
+{
+    $('.overlay').animate({
+            opacity: 0,
+        }, 1000, function() {
+                        // Animation complete.
+    });
+}
 //Countdown timer for all phases
 function countdown() 
 {
@@ -157,14 +188,10 @@ function countdown()
         {
             //Do some emit to find out the winner from the server and display it.
             socket.emit('calcRoundWinner');
-            $('.overlay').animate({
-                opacity: 1,
-            }, 1000, function() {
-            });
-            //Set up timer for the voting phase
-            timeLeft = 1;
-            timerID = setInterval(countdown, 1000);
-            timerType = phases.scoreboardPhase;
+            //END GAME SOMEWHERE HERE
+            //TODO:
+            //HAVE TWO SOCKET FUNCTIONS TO CHANGE TIMERTYPE DEPENDING ON IF GAME IS OVER NOT
+            fade();
         }
         else if(timerType == phases.scoreboardPhase)
         {
@@ -178,11 +205,7 @@ function countdown()
                     $('body').removeClass('home');
                     $('body').addClass('scoreboardBG');
                     $('#showdown').html(data);
-                    $('.overlay').animate({
-                        opacity: 0,
-                    }, 1000, function() {
-                        // Animation complete.
-                    });
+                    unfade();
                 }
             });
             timeLeft = 5;
@@ -208,6 +231,25 @@ function countdown()
             });
             //Start the new round here.
             timerType = phases.prePhase;
+        }
+        else if(timerType == phases.endPhase)
+        {
+            //Declare the winner here, but make sure to grab stats in flask route
+            $.ajax({
+                type:'POST',
+                url:'/host_finale',
+                data: JSON.stringify( {'roomCode' : roomCode }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(data)
+                {
+                    //Do an error check if there isn't enough players
+                    $('#showdown').html(data);
+                    $('body').removeClass('scoreboardBG');
+                    $('body').addClass('home');
+                    $('#roomCode').html(roomCode);
+                    unfade();
+                }
+            });
         }
     }
     else
