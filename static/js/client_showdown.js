@@ -14,23 +14,7 @@ $(document).ready(function(){
         console.log('False Start!');
         displayText.innerHTML = 'Someone let go early! False start!';
     });
-//Migrate player to drawing phase.    
-    socket.on('drawingPhase', function(reply) {
-        //inGame = true;
-        prompt = reply.data;
-        $.ajax({
-            type: "POST",
-            url: '/client_draw',
-            //data: JSON.stringify( {'num' : '0', 'hi' : 'baka'} ) , //NEW
-            //contentType: 'application/json;charset=UTF-8', //NEW
-            success: function (data) {
-                console.log(data)  // display the returned data in the console.
-                $('#content').html(data);
-                $('#prompt').html(prompt);
-            }
-        });   
-    });
-    
+
     socket.on('endDrawing', function() {
         $('#content').empty(); 
     });

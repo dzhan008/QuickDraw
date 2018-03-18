@@ -18,10 +18,80 @@
         <script>
 
             var socket = 0;
+            var masterRoomCode = "";
+            function setRoomCode(code)
+            {
+                masterRoomCode = code;
+                console.log("setRoomCode: " + masterRoomCode);
+            }
             $(document).ready(function()
             {
                 if (socket == 0)
                     socket = io.connect('http://' + document.domain + ':' + location.port);
+                    socket.on('serverMsg', function(msg)
+                {
+                if (msg == 'return')
+                {
+                    $.ajax(
+                    {
+                        type:'POST',
+                        url: '/index',
+                        success: function(data)
+                        {
+                            console.log(data);
+                            $('body').html(data);
+                        }
+                    });
+                }
+                });
+
+                socket.on('start_showdown', function()
+                {
+                $.ajax(
+                {
+                    type:'POST',
+                    url: '/client_showdown',
+                    success: function(data)
+                    {
+                        console.log(data);
+                        $('#content').html(data);
+                    }
+                });
+                });
+
+                socket.on('spectate_match', function(){
+                $('#content').html('Currently spectating match...');
+                });
+
+                socket.on('votingPhase', function() {
+                    $.ajax({
+                        type: "POST",
+                        url: '/client_voting',
+                        data: JSON.stringify( {'roomCode' : masterRoomCode }),
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function (data) {
+                            console.log(data)  // display the returned data in the console.
+                            $('#content').html(data);
+                        }
+                    });
+                });
+
+                //Migrate player to drawing phase.    
+                socket.on('drawingPhase', function(reply) {
+                //inGame = true;
+                prompt = reply.data;
+                $.ajax({
+                    type: "POST",
+                    url: '/client_draw',
+                    //data: JSON.stringify( {'num' : '0', 'hi' : 'baka'} ) , //NEW
+                    //contentType: 'application/json;charset=UTF-8', //NEW
+                    success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        $('#content').html(data);
+                        $('#prompt').html(prompt);
+                    }
+                });   
+                });
             });
         </script>
     </head>
@@ -87,5 +157,7 @@
                 }
             });
         }
+
+
     </script>
 </html>
