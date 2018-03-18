@@ -38,6 +38,10 @@ class GameManager:
 		
 	#Test function to make  two random players competitors
 	def setCompetitors(self):
+		if len(self.competitors) == 1:
+			playerChooseIndex = random.sample(range(0, len(self.playersChoose)), 1);
+			self.competitors.append(self.playersChoose[playerChooseIndex])
+			return
 		if len(self.competitors) > 0:
 			del self.competitors[:]
 		playerChooseIndices = random.sample(range(0, len(self.playersChoose)), 2);
@@ -101,6 +105,11 @@ class GameManager:
 			print (self.activePlayers[self.playersChoose[i]].username)
 	
 		if len(self.playersChoose) == 1:
+			if len(self.competitors) > 0:
+				del self.playersChoose[:]
+                        self.competitors.append[self.playersChoose[0]]
+			if len(self.playersChoose) > 0:
+				del self.playersChoose[:]
 			tempmin = tempmin + 1
 			for i in range(len(self.activePlayers)):
 				if self.activePlayers[i].gamesPlayed == tempmin:
