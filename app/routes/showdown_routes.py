@@ -29,6 +29,7 @@ def host():
     data = request.get_json()
     game = lobbyManager.getGameManager(data['roomCode'])
     game.setCompetitors()
+    game.state = 2; #Change to pre state for showdown
     competitorSIDs = []
     competitorObjs = []
     #Loop through the current competitors and grab their names
@@ -36,6 +37,7 @@ def host():
         competitorSIDs.append(game.activePlayers[game.competitors[i]].sid)
         competitorObjs.append(game.activePlayers[game.competitors[i]])
     helper.tellGroup('start_showdown', competitorSIDs)
+    helper.tellGroup('spectate_match', game.getAudienceSIDs())
     return render_template('host_showdown.html', playerOne=competitorObjs[0].username, 
                           playerTwo=competitorObjs[1].username, 
                           modelOne=competitorObjs[0].imageIndex,

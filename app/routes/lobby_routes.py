@@ -40,7 +40,7 @@ def rejoin():
     data = request.get_json()
     gameState = data['gameState']
     print "Game State: " + str(data['gameState'])
-    return render_template('showdown.html')
+    return render_template('host_showdown.html')
 
 def randCode(size = 4):
     chars = string.ascii_uppercase + string.digits

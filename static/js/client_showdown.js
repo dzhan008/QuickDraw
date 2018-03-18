@@ -20,9 +20,24 @@ $(document).ready(function(){
     });
 //Migrate player to drawing phase.    
     socket.on('drawingPhase', function(reply) {
-        inGame = true;
+        //inGame = true;
         prompt = reply.data;
-    })
+        $.ajax({
+            type: "POST",
+            url: '/client_draw',
+            //data: JSON.stringify( {'num' : '0', 'hi' : 'baka'} ) , //NEW
+            //contentType: 'application/json;charset=UTF-8', //NEW
+            success: function (data) {
+                console.log(data)  // display the returned data in the console.
+                $('#content').html(data);
+                $('#prompt').html(prompt);
+            }
+        });   
+    });
+    
+    socket.on('endDrawing', function() {
+        $('#content').empty(); 
+    });
     
 //Mouse events
     $("button").mousedown(function(){
@@ -60,20 +75,5 @@ function handleReady()
 //Handles unready case for mouse and touch inputs.
 function handleUnready()
 {
-    if(inGame) {
-        $.ajax({
-            type: "POST",
-            url: '/client_draw',
-            //data: JSON.stringify( {'num' : '0', 'hi' : 'baka'} ) , //NEW
-            //contentType: 'application/json;charset=UTF-8', //NEW
-            success: function (data) {
-                console.log(data)  // display the returned data in the console.
-                $('body').html(data);
-                $('#prompt').html(prompt);
-            }
-        });
-    }
-    else {
-        socket.emit('unready');  
-    }
+    socket.emit('unready');
 }

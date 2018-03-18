@@ -30,7 +30,7 @@ def ready():
         players[game.competitors[0]].ready = False
         players[game.competitors[1]].ready = False
         x = helper.generateSuspenseTime()
-        flask_app.config['showdown'] = True
+        game.state = 3
         emit('startTimer', {'data': x}, room=game.host)
 
 @socketio.on('unready')
@@ -40,28 +40,32 @@ def unready():
     competitorSIDs = game.getCompetitorSIDs()
     playerUnready = ''
     #Player let go early!
-    if flask_app.config['showdown'] == True:
+    if game.state == 3:
         helper.tellGroup('falseStart', competitors)
         emit('falseStart', room=game.host)
+        game.state = 2
         #Handle fouls here
-        flask_app.config['showdown'] = False
+        game.showdownStarted = False
+
     #Check which player unreadied to display to host
     if request.sid == competitorSIDs[0]:
         players[game.competitors[0]].ready = False
         playerUnready = 'one'
     elif request.sid == competitorSIDs[1]:
-        players[game.competitors[0]].ready = False
+        players[game.competitors[1]].ready = False
         playerUnready = 'two'
-
-    emit('displayUnready', {'data' : playerUnready}, room=game.host)
+    if game.state == 2:
+        emit('displayUnready', {'data' : playerUnready}, room=game.host)
+    if game.state == 4:
+        emit('drawingPhase', {'data' : game.currentPrompt}, room=request.sid);
 
 #Starting Phase Events
 
 @socketio.on('startDrawing')
 def startDrawing():
     game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
-    flask_app.config['currentPrompt'] = helper.generatePrompt()
-    helper.tellGroupWithData('drawingPhase', flask_app.config['currentPrompt'], game.getCompetitorSIDs())
+    game.currentPrompt = helper.generatePrompt()
+    game.state = 4
 
 @socketio.on('canvasData')
 def displayDrawing(json):
@@ -77,6 +81,7 @@ def displayDrawing(json):
 @socketio.on('startVoting')
 def startVoting():
     game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+    helper.tellGroup('endDrawing', game.getCompetitorSIDs())
     helper.tellGroup('votingPhase', game.getAudienceSIDs())
 
 @socketio.on('choiceOne')

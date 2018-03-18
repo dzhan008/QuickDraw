@@ -13,7 +13,8 @@ class GameManager:
 		#-----Game Info-----#
 		self.roundCount = 0
 		self.roundMax = 0
-		self.state = 1 #1=Lobby 2=Showdown 3=Vote
+		self.state = 1 #1=Lobby 2=Pre 3=Showdown 4=Draw 4=Vote
+		self.currentPrompt = ''
 		
 	#the playerObj is created in flaskapp under playerJoin
 	def addPlayer(self, playerObj):

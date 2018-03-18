@@ -1,6 +1,6 @@
 var timeLeft = 0;
 var timerTag = '#Timer';
-const phases = Object.freeze( 
+var phases = Object.freeze( 
 {
     prePhase: 0,
     drawingPhase: 1,
@@ -39,8 +39,8 @@ $(document).ready(function(){
         $('#top-text').html("STARTING SHOWDOWN IN");
         $(timerTag).show();
         $('#press-screen').hide();
-        $('#comp-one-ready').hide();
-        $('#comp-two-ready').hide();
+        //$('#comp-one-ready').hide();
+        //$('#comp-two-ready').hide();
     });
     
     socket.on('displayReady', function(msg) {
@@ -58,6 +58,13 @@ $(document).ready(function(){
     socket.on('falseStart', function(){
         clearTimeout(timerID);
         $('#top-text').html('Timer stopped due to false start.');
+        $(timerTag).empty();
+        $(timerTag).hide();
+        $('#press-screen').show();
+        $('#Canvas').empty();
+        timerType = phases.prePhase;
+        $('#comp-one-ready').removeClass('ready').addClass('notReady');
+        $('#comp-two-ready').removeClass('ready').addClass('notReady');
     });
     
     socket.on('displayRoundWinner', function(msg){

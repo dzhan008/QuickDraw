@@ -15,9 +15,12 @@
 		<title>Login Quick Draw</title>
 	</head>
 	<body>
-		<h1>Please wait for the game to start</h1>
-		<h1> Hello, {{ user }}!</h1>
-		<h1> Room Code: {{ room_code }}</h1>
+        <h1 class="text-center" id="username"> {{ user }}</h1>
+        <div id="content">
+            <h1>Welcome Partner!</h1>
+            <h1>Please wait for the game to start.</h1>
+		    <h1> Room Code: {{ room_code }}</h1>
+        </div>
 	</body>
 	<script>
 		$(document).ready(function(){
@@ -26,7 +29,7 @@
 			//Tell the host client to update the list
 			var char = document.createElement('img');
 			char.src = "/static/images/Idle" + '{{char_select}}' + '.png';
-			document.body.appendChild(char);
+			$("#content").append(char);
 			socket.emit('playerJoin', {user: '{{user}}', char_select: '{{char_select}}', room_code: '{{room_code}}'});
 		});
 		socket.on('serverMsg', function(msg)
@@ -54,9 +57,13 @@
             	success: function(data)
             	{
             		console.log(data);
-            		$('body').html(data);
+            		$('#content').html(data);
             	}
             });
+        });
+        
+        socket.on('spectate_match', function(){
+           $('#content').html('Currently spectating match...');
         });
         
         socket.on('votingPhase', function() {
@@ -67,7 +74,7 @@
             contentType: 'application/json;charset=UTF-8',
             success: function (data) {
                 console.log(data)  // display the returned data in the console.
-                $('body').html(data);
+                $('#content').html(data);
             }
         });
             
