@@ -35,13 +35,6 @@ def login():
     #Rerender the index html with error messages for the respective fields
     return jsonify(error=4) #error4 is didn't fill out correctly
 
-@flask_app.route('/rejoin', methods=['GET', 'POST'])
-def rejoin():
-    data = request.get_json()
-    gameState = data['gameState']
-    print "Game State: " + str(data['gameState'])
-    return render_template('host_showdown.html')
-
 def randCode(size = 4):
     chars = string.ascii_uppercase + string.digits
     return ''.join(random.choice(chars) for _ in range(size))

@@ -23,9 +23,15 @@ def dcGame(gameCode):
 def checkExistUser(formData):
     print "check exists"
     gameState =  flask_app.config['LobbyManager'].checkExistingPlayer(formData['room_code'], formData['user'], request.sid)
-    if gameState == 1:
+    isCompetitor = 0
+    if gameState == 1: #if the game is still in the lobby
         gameState = 0
-    emit('playerState', gameState, room=request.sid)
+    else: #check if the player is a competitor
+        game = flask_app.config['LobbyManager'].getGameManager(formData['room_code']);
+        competitorSIDs = game.getCompetitorSIDs()
+        if request.sid in competitorSIDs: #if competitor
+            isCompetitor = 1
+    emit('playerState', {'gameState': gameState, 'isCompetitor': isCompetitor}, room=request.sid)
 
 @socketio.on('playerJoin')
 def playerJoin(message):
@@ -38,6 +44,7 @@ def playerJoin(message):
     if hostSID == 0:
         print "Error in finding hostSID in playerJoin"
         return
+
     emit('playerJoin', {'username': message['user'], 'charIndex': message['char_select']}, room=hostSID)
     emit('serverMsg', flask_app.config['LobbyManager'].UsersDict[request.sid] + " has joined", room=message['room_code'])
 
