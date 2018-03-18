@@ -23,7 +23,7 @@ body
 {
 	background-image: url('/static/images/LobbyBackground.png');
 }
-.scoreboard
+.scoreboardBG
 {
     background-image: url('/static/images/ScoreBackground.png');
 }

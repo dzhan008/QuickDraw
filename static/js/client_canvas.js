@@ -12,6 +12,7 @@ var switchSend = 1;
 var previousSize = 0;
 var count = 0;
 $( document ).ready(function() {
+    console.log('Making canvas!');
 	canvasDiv = document.getElementById('canvasDiv');
 	canvas = document.createElement('canvas');
 	canvas.setAttribute('width', canvasWidth);

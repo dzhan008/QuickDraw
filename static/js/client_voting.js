@@ -29,11 +29,11 @@ $(document).ready(function(){
 function choiceOne()
 {
     socket.emit('choiceOne');
-    $('body').html("Thanks for voting!");
+    $('#content').html("Thanks for voting!");
 }
 
 function choiceTwo()
 {
     socket.emit('choiceTwo');
-    $('body').html("Thanks for voting!");
+    $('#content').html("Thanks for voting!");
 }

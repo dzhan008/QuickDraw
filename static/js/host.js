@@ -1,6 +1,6 @@
 var timeLeft = 0;
 var timerTag = '#Timer';
-var phases = Object.freeze( 
+const phases = Object.freeze( 
 {
     prePhase: 0,
     drawingPhase: 1,
@@ -26,9 +26,6 @@ var timeLeft = Math.floor((Math.random() * (maxTime - minTime + 1) + minTime));
 $(document).ready(function(){
     
     roomCode = $('#roomCode').html();
-    socket.on('connect', function() {
-        console.log('Host connected.');
-    });
         
     //Grabs random time from server and starts timer
     socket.on('startTimer', function(msg){
@@ -179,7 +176,7 @@ function countdown()
                 success: function(data)
                 {
                     $('body').removeClass('home');
-                    $('body').addClass('scoreboard');
+                    $('body').addClass('scoreboardBG');
                     $('#showdown').html(data);
                     $('.overlay').animate({
                         opacity: 0,
@@ -203,8 +200,8 @@ function countdown()
                 success: function(data)
                 {
                     //Do an error check if there isn't enough players
-                    $('body').html(data);
-                    $('body').removeClass('scoreboard');
+                    $('#showdown').html(data);
+                    $('body').removeClass('scoreboardBG');
                     $('body').addClass('home');
                     $('#roomCode').html(roomCode);
                 }

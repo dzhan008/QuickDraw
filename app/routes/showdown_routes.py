@@ -28,6 +28,7 @@ def queue():
 def host():
     data = request.get_json()
     game = lobbyManager.getGameManager(data['roomCode'])
+    game.choosePlayers()
     game.setCompetitors()
     game.state = 2; #Change to pre state for showdown
     competitorSIDs = []

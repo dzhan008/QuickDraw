@@ -9,12 +9,15 @@ class GameManager:
 		self.dcPlayers = [] #Index
 		self.competitors = [] #Index
 		self.spectators = [] #sessionIDs
+		self.playersChoose = []
 
 		#-----Game Info-----#
 		self.roundCount = 0
-		self.roundMax = 0
+		self.roundMax = 3
 		self.state = 1 #1=Lobby 2=Pre 3=Showdown 4=Draw 4=Vote
 		self.currentPrompt = ''
+		self.isFair = False
+		self.gameEnd = False
 		
 	#the playerObj is created in flaskapp under playerJoin
 	def addPlayer(self, playerObj):
@@ -37,7 +40,11 @@ class GameManager:
 	def setCompetitors(self):
 		if len(self.competitors) > 0:
 			del self.competitors[:]
-		self.competitors = random.sample(range(0, len(self.activePlayers)), 2);
+		self.competitors = random.sample(range(0, len(self.playersChoose)), 2);
+		for i in range(0, len(self.competitors)):
+			print ("Name: " + self.activePlayers[self.competitors[i]].username)
+			print ("Games Played: %d" , self.activePlayers[self.competitors[i]].gamesPlayed)
+			self.activePlayers[self.competitors[i]].gamesPlayed += 1
 		return
 
 	def getCompetitorSIDs(self):
@@ -73,7 +80,8 @@ class GameManager:
 
 #Player selection Functions
 	def choosePlayers(self):
-		self.playersChoose = []
+		if len(self.playersChoose) > 0:
+			del self.playersChoose[:]
 		tempmin = 100
 		for player in self.activePlayers:
 			if tempmin > player.gamesPlayed:

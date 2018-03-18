@@ -2,10 +2,6 @@ var inGame = false;
 var displayText = document.getElementById('MainText');
 var prompt = "";
 $(document).ready(function(){
-   
-    socket.on('connect', function() {
-        console.log('Competitor connected.');
-    });
 
 //Provides a display of how many players are ready.
     socket.on('displayready', function(msg) {
