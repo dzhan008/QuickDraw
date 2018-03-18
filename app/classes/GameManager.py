@@ -40,15 +40,15 @@ class GameManager:
 	def setCompetitors(self):
 		if len(self.competitors) == 1:
 			playerChooseIndex = random.sample(range(0, len(self.playersChoose)), 1);
-			self.competitors.append(self.playersChoose[playerChooseIndex])
-			return
-		if len(self.competitors) > 0:
-			del self.competitors[:]
-		playerChooseIndices = random.sample(range(0, len(self.playersChoose)), 2);
-		for i in playerChooseIndices:
-			self.competitors.append(self.playersChoose[i])
-			print (" ***: ")
-			print (i)
+			self.competitors.append(self.playersChoose[playerChooseIndex[0]])
+		else:
+			if len(self.competitors) > 0:
+				del self.competitors[:]
+			playerChooseIndices = random.sample(range(0, len(self.playersChoose)), 2);
+			for i in playerChooseIndices:
+				self.competitors.append(self.playersChoose[i])
+				print (" ***: ")
+				print (i)
 		for i in range(0, len(self.competitors)):
 			print ("Name: " + self.activePlayers[self.competitors[i]].username)
 			print ("Games Played: %d" , self.activePlayers[self.competitors[i]].gamesPlayed)
@@ -106,8 +106,8 @@ class GameManager:
 	
 		if len(self.playersChoose) == 1:
 			if len(self.competitors) > 0:
-				del self.playersChoose[:]
-                        self.competitors.append[self.playersChoose[0]]
+				del self.competitors[:]
+			self.competitors.append(self.playersChoose[0])
 			if len(self.playersChoose) > 0:
 				del self.playersChoose[:]
 			tempmin = tempmin + 1
