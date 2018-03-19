@@ -64,7 +64,6 @@ def playerJoin(message):
         return
 
     emit('playerJoin', {'username': message['user'], 'charIndex': message['char_select']}, room=hostSID)
-    emit('serverMsg', flask_app.config['LobbyManager'].UsersDict[request.sid] + " has joined", room=message['room_code'])
 
 @socketio.on('playerLeave')
 def playerLeave(message):
