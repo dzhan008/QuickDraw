@@ -19,7 +19,7 @@
                     <h1>And the winner is...</h1>
                     <div id="winner-container" class="popout">
                     <img id="winner">
-                    <h1>{{username}}!</h1>
+                    <h1>{{wusername}}!</h1>
                     </div>
                 </div>
                 <div class="col-6">
@@ -36,20 +36,21 @@
 <script>
     $('#winner').attr('src', '/static/images/Idle' + {{imageIndex}} + '.png');
     var names = [
+        "{{wsusername}}",
+        "{{hvusername}}",
+        "Credits",
         "Quynh Nguyen",
         "Darren Houn",
-        "David Zhang",
-        "Bleh - 0 Likes",
-        "Meepers",
-        "Pinhead Larry"
+        "David Zhang"
+
     ];
     var titles = [
+        "Highest Win Streak - {{winstreak}}",
+        "Highest Votes On One Drawing - {{votes}}",
+        "Quick Draw",
         "Programmer/Designer",
         "Programmer",
-        "Programmer",
-        "Most Likes",
-        "Most Votes On One Drawing",
-        "Least Votes On One Drawing"
+        "Programmer"
     ];
     
     function writeName()

@@ -77,6 +77,8 @@ $(document).ready(function(){
         $('#comp-two-ready').removeClass('ready').addClass('notReady');
         $('#comp-one-ready').css('opacity','1');
         $('#comp-two-ready').css('opacity', '1');
+        suspenseAudio.pause();
+        suspenseAudio.currentTime = 0;
     });
     
     socket.on('displayRoundWinner', function(msg){
@@ -151,7 +153,7 @@ function displayBulletHoles(context)
                 context.drawImage(base_image, randomX, randomY);                
                 playClip('gunshot_magnum');
                 if (--i) myLoop(i);
-            }, 300)
+            }, 400)
         })(3);
     }
 }

@@ -5,6 +5,7 @@ class Player:
 		self.imageIndex = imageIndex
 		self.totalLikes = 0
 		self.winStreak = 0
+		self.highestWinStreak = 0
 		self.highestVote = 0
 		self.points = 0
 		self.gamesPlayed = 0
@@ -29,6 +30,8 @@ class Player:
 	def updateWinStreak(self, outcome):
 		if outcome:
 			self.winStreak += 1
+			if(self.winStreak > self.highestWinStreak):
+				self.highestWinStreak = self.winStreak
 		else:
 			self.winStreak = 0
 

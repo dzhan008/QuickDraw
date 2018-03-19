@@ -102,15 +102,22 @@ def choiceTwo(masterRoomCode):
 @socketio.on('calcRoundWinner')
 def calcRoundWinner(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
+    game.activePlayers[game.competitors[0]].updateHighestVote(game.playerOneVotes)
+    game.activePlayers[game.competitors[0]].updateHighestVote(game.playerTwoVotes)
     emit('spectate_match', game.getAudienceSIDs())
     if game.playerOneVotes > game.playerTwoVotes:
         game.activePlayers[game.competitors[0]].points += 1;
+        game.activePlayers[game.competitors[0]].updateWinStreak(True)
+        game.activePlayers[game.competitors[1]].updateWinStreak(False)
         emit('displayRoundWinner', { 'data': game.activePlayers[game.competitors[0]].username, 'player1Votes': game.playerOneVotes, 'player2Votes': game.playerTwoVotes}, room=game.host)
     elif game.playerTwoVotes > game.playerOneVotes:
         game.activePlayers[game.competitors[1]].points += 1;
+        game.activePlayers[game.competitors[1]].updateWinStreak(True)
+        game.activePlayers[game.competitors[0]].updateWinStreak(False)
         emit('displayRoundWinner', { 'data' : game.activePlayers[game.competitors[1]].username, 'player1Votes': game.playerOneVotes, 'player2Votes': game.playerTwoVotes }, room=game.host)
     else:
         emit('displayRoundWinner', { 'data' : 'No One'}, room=game.host)
+    game.resetPlayerVotes()
 
 @socketio.on('checkNextState')
 def checkNextState(masterRoomCode):

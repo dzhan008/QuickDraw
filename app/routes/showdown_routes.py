@@ -82,4 +82,8 @@ def displayFinale():
     data = request.get_json()
     game = lobbyManager.getGameManager(data['roomCode'])
     winner = game.getWinner()
-    return render_template('host_finale.html', username=winner.username, imageIndex=winner.imageIndex) #GET STATS FROM GAME
+    highestWinStreaker = game.getHighestWinStreak()
+    highestVoter = game.getHighestVote()
+    return render_template('host_finale.html', wusername=winner.username, imageIndex=winner.imageIndex, 
+                           wsusername=highestWinStreaker.username, winstreak=str(highestWinStreaker.highestWinStreak),
+                           hvusername=highestVoter.username, votes=str(highestVoter.highestVote)) #GET STATS FROM GAME

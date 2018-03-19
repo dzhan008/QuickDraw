@@ -13,7 +13,7 @@ class GameManager:
 
 		#-----Game Info-----#
 		self.roundCount = 0
-		self.roundMax = 0
+		self.roundMax = 2
 		self.state = 1 #1=Lobby 2=Pre 3=Showdown 4=Draw 4=Vote
 		self.currentPrompt = ''
 		self.isFair = False
@@ -156,5 +156,19 @@ class GameManager:
 			self.spectators.remove(specSID)
 			return 1
 		return 0
+
+	def getHighestWinStreak(self):
+		winnerIndex = 0
+		for i in range(0, len(self.activePlayers)):
+			if self.activePlayers[winnerIndex].highestWinStreak < self.activePlayers[i].highestWinStreak:
+				winnerIndex = i
+		return self.activePlayers[winnerIndex]
+
+	def getHighestVote(self):
+		winnerIndex = 0
+		for i in range(0, len(self.activePlayers)):
+			if self.activePlayers[winnerIndex].highestVote < self.activePlayers[i].highestVote:
+				winnerIndex = i
+		return self.activePlayers[winnerIndex]
 
 

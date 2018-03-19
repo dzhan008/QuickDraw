@@ -3,9 +3,9 @@
         <title>Login Quick Draw</title>
     </head>
     <body>
-        <h1> Room Code: <p id="roomCode">{{ code }}</p></h1>
-        <button id="StartGame">Start Game</button>
-        <button id="Disconnect">Disconnect</button>
+        <h1> Room Code: <p style="display:inline;" id="roomCode">{{ code }}</p></h1>
+        <button class="btn btn-block btn-success" style="width: 25%;" id="StartGame">Start Game</button>
+        <button class="btn btn-block btn-primary" style="width: 25%;" id="Disconnect">Disconnect</button>
         <div class="container playerContainer">
             <div class="row" id="playerList">
             </div>
@@ -43,8 +43,16 @@
                 disconnect();
             });
         });
+        
+        function stopMusic()
+        {
+            lobbyAudio.pause();
+            lobbyAudio.currentTime = 0.0;
+        }
+        
         function startGame()
         {
+            stopMusic();
             var code = '{{code}}'
             socket.emit('startGame', code);
             $.ajax({
@@ -61,11 +69,10 @@
                     $('body').addClass('home');
                 }
             });
-            lobbyAudio.pause();
-            lobbyAudio.currentTime = 0.0;
         }
         function disconnect()
         {
+            stopMusic();
             $.ajax({
                 type:'POST',
                 url:'/index',
@@ -73,7 +80,6 @@
                 {
                     socket.emit('disconnectGame', '{{code}}');
                     $('body').html(data);
-
                 }
             });
         }
@@ -86,7 +92,7 @@
             var playerList = document.getElementById('playerList');
             var col = document.createElement('div');
             col.setAttribute('id', msg['username']);
-            col.className = 'col-md-1 col-md-1-5 ';
+            col.className = 'col-md-1 col-md-1-5 text-center ';
             var prevMarginTop = $('#playerList').children().last().hasClass('marginTOP');
             if (!prevMarginTop)
                 col.className += 'marginTOP';
@@ -94,7 +100,9 @@
             img.src = "static/images/Idle" + msg['charIndex'] + '.png';
             img.className = 'charLobby';
             col.appendChild(img);
-            col.appendChild(document.createTextNode(msg['username']));
+            var username = document.createTextNode(msg['username']);
+            $(username).addClass('name-tag');
+            col.appendChild(username);
             col.style.cssText = "left:-1500px";
             playerList.appendChild(col);
             $(col).animate({'left': 0}, 1000);
