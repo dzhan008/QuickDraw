@@ -1,3 +1,7 @@
+@font-face {
+    font-family: "Summer";
+    src: url(../fonts/KGSummerSunshineBlackout.ttf) format("truetype");
+}
 .overlay
 {
     background: black;
@@ -25,6 +29,7 @@
 .timer-text
 {
     font-size: 20em;
+    font-family: "Summer", sans-serif;
 }
 
 .name-tag
@@ -69,6 +74,7 @@
 #top-text
 {
     font-size: 40pt;
+    font-family: "Summer", sans-serif;
 }
 
 #press-screen
@@ -106,4 +112,20 @@ img
 {
     width: 100%;
     height: auto; 
+}
+
+.numberCircle {
+    border-radius: 50%;
+    behavior: url(PIE.htc); /* remove if you don't care about IE8 */
+
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    
+    background: black;
+    border: 2px solid #666;
+    color: white;
+    text-align: center;
+    
+    font: 32px Arial, sans-serif;
 }

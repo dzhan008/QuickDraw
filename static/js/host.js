@@ -75,6 +75,13 @@ $(document).ready(function(){
     });
     
     socket.on('displayRoundWinner', function(msg){
+        
+        if (msg.data != 'No One')
+        {
+            displayVoteNumber(msg.player1Votes, msg.player2Votes);
+            if (msg.data == $('#p1Span').html()) displayBulletHoles(context2);
+            else displayBulletHoles(context1);
+        }
         $('#top-text').html("The winner is " + msg.data + "!"); 
     });
     
@@ -114,6 +121,32 @@ $(document).ready(function(){
     
 });
 
+function displayVoteNumber(p1Votes, p2Votes)
+{
+    context1.fillStyle = "black";
+    context1.font = "bold 120px Summer";
+    context1.fillText("" + p1Votes, (canvasWidth / 2) - 17, (canvasHeight / 2) + 8);
+    context2.fillStyle = "black";
+    context2.font = "bold 120px Summer";
+    context2.fillText("" + p2Votes, (canvasWidth / 2) - 17, (canvasHeight / 2) + 8);
+
+}
+function displayBulletHoles(context)
+{
+    base_image = new Image();
+    base_image.src = '../static/images/bulletHole.png';
+    base_image.onload = function(){
+        (function myLoop (i) {          
+            setTimeout(function () {   
+                var randomX=Math.min(canvasWidth-80,Math.random()*canvasWidth);
+                var randomY=Math.min(canvasHeight-100,Math.random()*canvasHeight);
+                context.drawImage(base_image, randomX, randomY);                
+                //AUDIO HERE
+                if (--i) myLoop(i);
+            }, 300)
+        })(3);
+    }
+}
 function fade()
 {
     $('.overlay').animate({

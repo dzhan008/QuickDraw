@@ -116,6 +116,11 @@
             console.log("playerAction");
             var name = document.getElementsByName('name')[0].value;
             var gameCode = document.getElementsByName('room_code')[0].value;
+            if (name == "" || gameCode == "")
+            {
+                alert('Please fill out all fields');
+                return;
+            }
             setRoomCode(gameCode);
 
             socket.emit('checkExistUser', {user: name, room_code: gameCode}); 

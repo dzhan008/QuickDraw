@@ -103,10 +103,10 @@ def calcRoundWinner(masterRoomCode):
     emit('spectate_match', game.getAudienceSIDs())
     if game.playerOneVotes > game.playerTwoVotes:
         game.activePlayers[game.competitors[0]].points += 1;
-        emit('displayRoundWinner', { 'data': game.activePlayers[game.competitors[0]].username }, room=game.host)
+        emit('displayRoundWinner', { 'data': game.activePlayers[game.competitors[0]].username, 'player1Votes': game.playerOneVotes, 'player2Votes': game.playerTwoVotes}, room=game.host)
     elif game.playerTwoVotes > game.playerOneVotes:
         game.activePlayers[game.competitors[1]].points += 1;
-        emit('displayRoundWinner', { 'data' : game.activePlayers[game.competitors[1]].username }, room=game.host)
+        emit('displayRoundWinner', { 'data' : game.activePlayers[game.competitors[1]].username, 'player1Votes': game.playerOneVotes, 'player2Votes': game.playerTwoVotes }, room=game.host)
     else:
         emit('displayRoundWinner', { 'data' : 'No One'}, room=game.host)
 

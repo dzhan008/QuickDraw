@@ -32,7 +32,7 @@ $( document ).ready(function() {
 	function start(e)
 	{
 		e.preventDefault();
-		if (e.type == "mousemove")
+		if (e.type == "mousedown")
 		{
 			prevX = e.pageX - this.offsetLeft;
 			prevY = e.pageY - this.offsetTop;
@@ -48,6 +48,7 @@ $( document ).ready(function() {
 	var lastMove = 0;
 	function draw(e)
 	{
+		e.preventDefault();
 		var currX = 0;
 		var currY = 0;
 		if (e.type == "mousemove")
@@ -80,6 +81,7 @@ $( document ).ready(function() {
 	}
 	function stop(e)
 	{
+		e.preventDefault();
 		paint = false;
 	}
 
