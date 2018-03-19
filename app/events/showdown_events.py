@@ -91,11 +91,13 @@ def startVoting(masterRoomCode):
 def choiceOne(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
     game.playerOneVotes += 1
+    checkVotes(game)
 
 @socketio.on('choiceTwo')
 def choiceTwo(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
     game.playerTwoVotes += 1
+    checkVotes(game)
 
 @socketio.on('calcRoundWinner')
 def calcRoundWinner(masterRoomCode):
@@ -113,8 +115,14 @@ def calcRoundWinner(masterRoomCode):
 @socketio.on('checkNextState')
 def checkNextState(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
-    if game.validateEndGame():#game.roundCount == game.roundMax:
+    if game.roundCount == game.roundMax: #game.validateEndGame():
         emit('endGame', room=game.host)
     else:
         emit('displayScoreboard', room=game.host)
         game.roundCount += 1
+
+def checkVotes(game):
+    game.currentVotes += 1
+    if game.currentVotes == len(game.getAudienceSIDs()):
+        game.currentVotes = 0
+        emit('skipVoting', room=game.host)

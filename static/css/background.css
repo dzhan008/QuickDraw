@@ -37,18 +37,6 @@ body
   	right: 0;
 }
 
-.col-md-1-5
-{
-	width: 12.5%;
-	-webkit-box-flex: 0;
-    -ms-flex: 0 0 12.5%;
-    flex: 0 0 12.5%;
-    max-width: 12.5%;
-    -webkit-transition: all .5s ease;
-    -moz-transition: all .5s ease;
-    -o-transition: all .5s ease;
-    transition: all 5s ease;
-}
 .marginTOP
 {
 	margin-top: 50px;	

@@ -14,6 +14,17 @@
         </ul> -->
     </body>
     <script>
+         //Create an audio object/promise and play it
+         var lobbyAudio = new Audio('static/audio/saloon_break_time.mp3');
+         var playPromise = lobbyAudio.play();
+         
+         if(playPromise !== undefined) {
+             playPromise.then(function() {
+                 
+             }).catch(function(error) {
+                 
+             });
+         }
         $(document).ready(function()
         {
             //console.log('+{{code}});
@@ -50,6 +61,8 @@
                     $('body').addClass('home');
                 }
             });
+            lobbyAudio.pause();
+            lobbyAudio.currentTime = 0.0;
         }
         function disconnect()
         {
@@ -85,6 +98,7 @@
             col.style.cssText = "left:-1500px";
             playerList.appendChild(col);
             $(col).animate({'left': 0}, 1000);
+            playClip(msg['charIndex']);
             //$(playerList).hide().fadeIn(1000);
             // var ul = document.getElementById('playerList');
             // var li = document.createElement("li");

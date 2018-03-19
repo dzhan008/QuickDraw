@@ -13,11 +13,12 @@ class GameManager:
 
 		#-----Game Info-----#
 		self.roundCount = 0
-		self.roundMax = 1
+		self.roundMax = 0
 		self.state = 1 #1=Lobby 2=Pre 3=Showdown 4=Draw 4=Vote
 		self.currentPrompt = ''
 		self.isFair = False
 		self.gameEnd = False
+		self.currentVotes = 0
 		self.playerOneVotes = 0
 		self.playerTwoVotes = 0
 		
@@ -93,7 +94,7 @@ class GameManager:
 		for i in range(0, len(self.activePlayers)):
 			if self.activePlayers[winnerIndex].points < self.activePlayers[i].points:
 				winnerIndex = i
-			return self.activePlayers[winnerIndex]
+		return self.activePlayers[winnerIndex]
 
 	def resetPlayerVotes(self):
 		self.playerOneVotes = 0

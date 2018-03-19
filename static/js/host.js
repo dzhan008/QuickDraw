@@ -18,11 +18,13 @@ var roomCode;
 var suspenseTime = 0;
 var MAX_COUNTDOWN_TIME = 5;
 var MAX_DRAWING_TIME = 10;
-var MAX_VOTING_TIME = 15;
+var MAX_VOTING_TIME = 5;
 var MAX_DISPLAY_WINNER_TIME = 5;
 var MAX_DISPLAY_SCOREBOARD_TIME = 5;
 var MAX_TRANSITION_TIME = 1;
-var MAX_CREDITS_TIME = 15;
+var MAX_CREDITS_TIME = 30;
+
+var suspenseAudio = new Audio('static/audio/showdown.mp3');
 
 
 //Old clientside code for randomly setting a time, not sure if better to do it clientside than serverside
@@ -54,6 +56,7 @@ $(document).ready(function(){
         var competitor = '#comp-' + msg.data + '-ready';
         console.log(competitor);
         $(competitor).removeClass('notReady').addClass('ready');
+        playClip('revolver_click');
     });
     
     socket.on('displayUnready', function(msg) {
@@ -72,10 +75,11 @@ $(document).ready(function(){
         timerType = phases.prePhase;
         $('#comp-one-ready').removeClass('ready').addClass('notReady');
         $('#comp-two-ready').removeClass('ready').addClass('notReady');
+        $('#comp-one-ready').css('opacity','1');
+        $('#comp-two-ready').css('opacity', '1');
     });
     
     socket.on('displayRoundWinner', function(msg){
-        
         if (msg.data != 'No One')
         {
             displayVoteNumber(msg.player1Votes, msg.player2Votes);
@@ -100,6 +104,10 @@ $(document).ready(function(){
         timeLeft = 1;
         timerID = setInterval(countdown, 1000);
         timerType = phases.endPhase;
+    });
+    
+    socket.on('skipVoting', function(){
+        timeLeft = 0; 
     });
 
     $("button").mouseup(function(){
@@ -141,12 +149,13 @@ function displayBulletHoles(context)
                 var randomX=Math.min(canvasWidth-80,Math.random()*canvasWidth);
                 var randomY=Math.min(canvasHeight-100,Math.random()*canvasHeight);
                 context.drawImage(base_image, randomX, randomY);                
-                //AUDIO HERE
+                playClip('gunshot_magnum');
                 if (--i) myLoop(i);
             }, 300)
         })(3);
     }
 }
+
 function fade()
 {
     $('.overlay').animate({
@@ -189,6 +198,16 @@ function countdown()
             timeLeft = suspenseTime;
             timerID = setInterval(countdown, 1000);
             timerType = phases.suspensePhase;
+            //Create an audio object/promise and play it
+            var playPromise = suspenseAudio.play();
+
+            if(playPromise !== undefined) {
+                playPromise.then(function() {
+                    
+                }).catch(function(error) {
+                    
+                });
+            }
         }
         else if(timerType == phases.suspensePhase)
         {
@@ -203,7 +222,6 @@ function countdown()
                     
                 });
             }
-            
             //Start the drawing phase for the clients, and also grab the main real time canvases of both clients
             socket.emit('startDrawing', roomCode);
             $.ajax({
@@ -259,6 +277,8 @@ function countdown()
         {
             socket.emit('checkNextState', roomCode);
             fade();
+            suspenseAudio.pause();
+            suspenseAudio.currentTime = 0;
         }
         else if(timerType == phases.scoreboardPhase)
         {
@@ -302,6 +322,7 @@ function countdown()
                     $('body').removeClass('scoreboardBG');
                     $('body').addClass('home');
                     $('#roomCode').html(roomCode);
+                    $('#hostCanvas').empty();
                     unfade();
                 }
             });
@@ -323,10 +344,11 @@ function countdown()
                     $('body').removeClass('scoreboardBG');
                     $('body').addClass('home');
                     $('#roomCode').html(roomCode);
+                    $('#hostCanvas').empty();
                     unfade();
                 }
             });
-            timerLeft = MAX_CREDITS_TIME;
+            timeLeft = MAX_CREDITS_TIME;
             timerID = setInterval(countdown, 1000);
             timerType = phases.bootPhase;
         }

@@ -93,6 +93,22 @@
                 });   
                 });
             });
+            
+            function playClip(clipName)
+            {
+                //Create an audio object/promise and play it
+                var audio = new Audio('static/audio/' + clipName + '.mp3');
+                var playPromise = audio.play();
+    
+                if(playPromise !== undefined) {
+                    playPromise.then(function() {
+                        
+                    }).catch(function(error) {
+                        
+                    });
+                }
+            }
+            
         </script>
     </head>
     

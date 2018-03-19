@@ -34,7 +34,7 @@
 </html>
 
 <script>
-    //$('#winner').attr('src', '/static/images/Idle' + {{imageIndex}} + '.png');
+    $('#winner').attr('src', '/static/images/Idle' + {{imageIndex}} + '.png');
     var names = [
         "Quynh Nguyen",
         "Darren Houn",
@@ -55,18 +55,18 @@
     function writeName()
     {
         var i = 0,
-            player,
+            playerStat,
             name,
             title,
             bottom;
         
         var interval = setInterval(function() {
-            player = '.player.' + i;
+            playerStat = '.playerStat.' + i;
             name = '.name.' + i;
             title = '.title.' + i;
-            $('<div></div>').appendTo('#screen').addClass('player '+i);
-            $('<h4></h4>').appendTo(player).addClass('title '+i);
-            $('<h2></h2>').appendTo(player).addClass('name '+i);
+            $('<div></div>').appendTo('#screen').addClass('playerStat '+i);
+            $('<h4></h4>').appendTo(playerStat).addClass('title '+i);
+            $('<h2></h2>').appendTo(playerStat).addClass('name '+i);
             $(name).text(names[i]);
             $(title).text(titles[i]);
             i++;
@@ -91,8 +91,8 @@
     function scrollText()
     {
         var interval = setInterval(function(){
-                            $('.player').css('bottom', '+=1px');
-                            $('.player').css('opacity', '-=0.0008');
+                            $('.playerStat').css('bottom', '+=1px');
+                            $('.playerStat').css('opacity', '-=0.0008');
         }, 15);
     }
     

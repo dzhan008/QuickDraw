@@ -16,9 +16,9 @@
     to{-webkit-transform:scale(1)}  
 }
 
-.player
+.playerStat
 {
-    margin-top: 500px;
+    margin-top: 148%;
     list-style-type: none;
     position: absolute;
     line-height: 1.5em;
