@@ -13,11 +13,13 @@ class GameManager:
 
 		#-----Game Info-----#
 		self.roundCount = 0
-		self.roundMax = 3
+		self.roundMax = 1
 		self.state = 1 #1=Lobby 2=Pre 3=Showdown 4=Draw 4=Vote
 		self.currentPrompt = ''
 		self.isFair = False
 		self.gameEnd = False
+		self.playerOneVotes = 0
+		self.playerTwoVotes = 0
 		
 	#the playerObj is created in flaskapp under playerJoin
 	def addPlayer(self, playerObj):
@@ -35,16 +37,7 @@ class GameManager:
 					self.dcPlayers.append(self.activePlayers.index(player))
 				return 1 #return 1 if we found a player
 		return 0
-	
-	def addSpectator(self, specSID):
-		self.spectators.append(specSID)
-
-	def removeSpectator(self, specSID):
-		if specSID in self.spectators:
-			self.spectators.remove(specSID)
-			return 1
-		return 0
-
+		
 	#Test function to make  two random players competitors
 	def setCompetitors(self):
 		if len(self.competitors) == 1:
@@ -102,6 +95,10 @@ class GameManager:
 				winnerIndex = i
 			return self.activePlayers[winnerIndex]
 
+	def resetPlayerVotes(self):
+		self.playerOneVotes = 0
+		self.playerTwoVotes = 0
+
 #Player selection Functions
 	def choosePlayers(self):
 		if len(self.playersChoose) > 0:
@@ -150,6 +147,13 @@ class GameManager:
 				self.gameEnd = False
 		return self.gameEnd
 
+	def addSpectator(self, specSID):
+		self.spectators.append(specSID)
 
+	def removeSpectator(self, specSID):
+		if specSID in self.spectators:
+			self.spectators.remove(specSID)
+			return 1
+		return 0
 
 

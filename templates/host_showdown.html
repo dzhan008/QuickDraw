@@ -7,7 +7,6 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
         
         <!--Style Sheets -->
         <link href="{{ url_for('static', filename='css/showdown.css') }}" rel="stylesheet">
@@ -21,12 +20,12 @@
         <div id="hostCanvas"></div>
         <div id="showdown" class="container">
             <div class="row">
-                <div class="col-sm-2">Room Code: <span id="roomCode"></span> </div>
-                <div class="col-sm-8 display-1 text-center" id="top-text">PRESS ON SCREEN TO READY</div>
-                <div class="col-sm-2"></div>
+                <div class="col-sm-2" id="roomCodeDiv">Room Code: <span id="roomCode"></span> </div>
+                <div class="col-sm-8 text-center" id="top-text">PRESS ON SCREEN TO READY</div>
+                <div class="col-sm-2 text-right" style="font-size:40;" id="corner-timer"></div>
             </div>
     
-            <div class="row" style="margin-top:23%;">
+            <div class="row" style="position:absolute;bottom: 0;left:200;right:200;">
             <!--PLAYER ONE IMAGES -->
                 <div class="col-md-2" align="center">
                     <div class="player">

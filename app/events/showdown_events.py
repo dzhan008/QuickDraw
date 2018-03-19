@@ -67,15 +67,16 @@ def startDrawing(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
     game.currentPrompt = helper.generatePrompt()
     game.state = 4
+    socketio.emit('displayPrompt', {'data' : game.currentPrompt}, room=game.host)
 
 @socketio.on('canvasData')
 def displayDrawing(json):
     game = lobbyManager.getGameManager(json['masterRoomCode'])
     competitorSIDs = game.getCompetitorSIDs()
     if request.sid == competitorSIDs[0]:
-        emit('player1Data', json, room=game.host);
+        emit('player1Data', json, room=game.host)
     else:
-        emit('player2Data', json, room=game.host);
+        emit('player2Data', json, room=game.host)
 
 #Voting Phase Events
 
@@ -87,20 +88,23 @@ def startVoting(masterRoomCode):
     helper.tellGroup('votingPhase', game.getAudienceSIDs())
 
 @socketio.on('choiceOne')
-def choiceOne():
-    flask_app.config['playerOneVotes'] += 1
+def choiceOne(masterRoomCode):
+    game = lobbyManager.getGameManager(masterRoomCode)
+    game.playerOneVotes += 1
 
 @socketio.on('choiceTwo')
-def choiceTwo():
-    flask_app.config['playerTwoVotes'] += 1
+def choiceTwo(masterRoomCode):
+    game = lobbyManager.getGameManager(masterRoomCode)
+    game.playerTwoVotes += 1
 
 @socketio.on('calcRoundWinner')
 def calcRoundWinner(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
-    if flask_app.config['playerOneVotes'] > flask_app.config['playerTwoVotes']:
+    emit('spectate_match', game.getAudienceSIDs())
+    if game.playerOneVotes > game.playerTwoVotes:
         game.activePlayers[game.competitors[0]].points += 1;
         emit('displayRoundWinner', { 'data': game.activePlayers[game.competitors[0]].username }, room=game.host)
-    elif flask_app.config['playerTwoVotes'] > flask_app.config['playerOneVotes']:
+    elif game.playerTwoVotes > game.playerOneVotes:
         game.activePlayers[game.competitors[1]].points += 1;
         emit('displayRoundWinner', { 'data' : game.activePlayers[game.competitors[1]].username }, room=game.host)
     else:
@@ -109,7 +113,7 @@ def calcRoundWinner(masterRoomCode):
 @socketio.on('checkNextState')
 def checkNextState(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
-    if game.roundCount == game.roundMax:
+    if game.validateEndGame():#game.roundCount == game.roundMax:
         emit('endGame', room=game.host)
     else:
         emit('displayScoreboard', room=game.host)

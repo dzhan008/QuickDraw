@@ -28,12 +28,12 @@ $(document).ready(function(){
 
 function choiceOne()
 {
-    socket.emit('choiceOne');
+    socket.emit('choiceOne', masterRoomCode);
     $('#content').html("Thanks for voting!");
 }
 
 function choiceTwo()
 {
-    socket.emit('choiceTwo');
+    socket.emit('choiceTwo', masterRoomCode);
     $('#content').html("Thanks for voting!");
 }

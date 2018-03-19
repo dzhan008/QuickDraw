@@ -46,8 +46,8 @@ $(document).ready(function(){
         $('#top-text').html("STARTING SHOWDOWN IN");
         $(timerTag).show();
         $('#press-screen').hide();
-        $('#comp-one-ready').attr('opacity','0');
-        $('#comp-two-ready').attr('opacity', '0');
+        $('#comp-one-ready').css('opacity','0');
+        $('#comp-two-ready').css('opacity', '0');
     });
     
     socket.on('displayReady', function(msg) {
@@ -75,7 +75,7 @@ $(document).ready(function(){
     });
     
     socket.on('displayRoundWinner', function(msg){
-        $('#bottom-text').html("The winner is " + msg.data + "!"); 
+        $('#top-text').html("The winner is " + msg.data + "!"); 
     });
     
     socket.on('displayScoreboard', function(){
@@ -83,6 +83,10 @@ $(document).ready(function(){
         timeLeft = 1;
         timerID = setInterval(countdown, 1000);
         timerType = phases.scoreboardPhase;
+    });
+    
+    socket.on('displayPrompt', function(msg){
+        $('#top-text').html('Prompt: ' + msg.data);
     });
     
     socket.on('endGame', function(){
@@ -146,8 +150,9 @@ function countdown()
             $('#comp-two-model').css('transform', 'scaleX(-1)');
             //Set up timer for the drawing phase
             $(timerTag).hide(); //Hide big timer
-            timerTag = '#top-text'; //Move the timer to the top
+            timerTag = '#corner-timer'; //Move the timer to the top
             //Time left will now be the suspense time.
+            $(timerTag).show();
             timeLeft = suspenseTime;
             timerID = setInterval(countdown, 1000);
             timerType = phases.suspensePhase;
@@ -196,17 +201,8 @@ function countdown()
         } 
         else if(timerType == phases.drawingPhase)
         {
-            $('#bottom-text').html('Vote for the best drawing!');
+            $('#top-text').html('Vote for the best drawing!');
             socket.emit('stopDrawing');
-            $.ajax({
-                type: "POST",
-                url: '/host_voting',
-                success: function (data) {
-                    console.log(data)  // display the returned data in the console.
-                    $('#Voting').html(data);
-                }
-            });
-            
             //Starts the voting phase for the clients.
             socket.emit('startVoting', roomCode);
             
@@ -214,6 +210,9 @@ function countdown()
             timeLeft = MAX_VOTING_TIME;
             timerID = setInterval(countdown, 1000);
             timerType = phases.votingPhase;
+            
+            $('#comp-one-model').attr('src', 'static/images/Idle' + modelOneIndex + '.png' );
+            $('#comp-two-model').attr('src', 'static/images/Idle' + modelTwoIndex + '.png');
         }
         else if(timerType == phases.votingPhase)
         {
@@ -296,7 +295,7 @@ function countdown()
             });
             timerLeft = MAX_CREDITS_TIME;
             timerID = setInterval(countdown, 1000);
-            //timerType = phases.bootPhase;
+            timerType = phases.bootPhase;
         }
         else if(timerType == phases.bootPhase)
         {

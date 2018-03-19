@@ -66,6 +66,22 @@
     margin-bottom: 5%;
 }
 
+#top-text
+{
+    font-size: 40pt;
+}
+
+#press-screen
+{
+    height: 75%;
+    width: auto;
+}
+
+#roomCodeDiv
+{
+    font-size: 20pt;
+}
+
 .test
 {
     background: red;
@@ -79,7 +95,7 @@
     margin: 0 auto;
     left: 0;
     right: 0;
-    bottom: 10%;
+    bottom: 5%;
     /*background: white;*/
 }
 #canvas1
