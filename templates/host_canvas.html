@@ -1,26 +1,27 @@
 <html>
 	<body>
-		<h1> You should see the competitor's clients here!</h1>
-		<div>
-		    {{ competitor_1 }}
-		    <div id="canvasDiv1" style="background:white; margin:0 auto;"></div>
-		</div>
-		<div>
-		    {{ competitor_2 }}
-		    <div id="canvasDiv2" style="background:white; margin:0 auto;"></div>
-		</div>
+		<div class="container">
+			<div class="row">
+				<div id="canvasDiv1" class="col-md-6" style="width: 100%; height: 60%;">
+				</div>
+				<div id="canvasDiv2" class="col-md-6" style="width: 100%; height: 60%">
+				</div>
+			</div>
+		</div> 
         <script>
 			var canvasDiv1;
 			var canvas1;
 			var context1;
-			var canvasWidth = 500;
-			var canvasHeight = 700;
+			var canvasWidth = 390;
+			var canvasHeight = 600;
 			
 			var canvasDiv2;
 			var canvas2;
 			var context2;
 			var previousSize = 0;
 			var count = 0;
+
+
 			$(document).ready(function() {
 				canvasDiv1 = document.getElementById('canvasDiv1');
 				canvas1 = document.createElement('canvas');
@@ -31,8 +32,9 @@
 				context1 = canvas1.getContext("2d");
 				context1.strokeStyle = "#a52224";
 				context1.lineJoin = "round";
-				context1.lineWidth = 5;
-
+				context1.lineWidth = 5;	
+				context1.fillStyle = "white";
+				context1.fillRect(0, 0, canvasWidth, canvasHeight);
 				canvasDiv2 = document.getElementById('canvasDiv2');
 				canvas2 = document.createElement('canvas');
 				canvas2.setAttribute('width', canvasWidth);
@@ -43,7 +45,14 @@
 				context2.strokeStyle = "#cc99b5";
 				context2.lineJoin = "round";
 				context2.lineWidth = 5;
+				context2.fillStyle = "white";
+				context2.fillRect(0, 0, canvasWidth, canvasHeight);
 
+				parentSize = document.getElementById('canvas1').parentNode.getBoundingClientRect();
+				//canvas1.width  = parentSize.width - 100;
+				//canvas1.height = parentSize.height;
+				//canvas2.width  = parentSize.width - 100;
+				//canvas2.height = parentSize.height;
 
 				if(typeof G_vmlCanvasManager != 'undefined') {
 					canvas = G_vmlCanvasManager.initElement(canvas);
@@ -51,6 +60,11 @@
 
 				function redraw(context, arrX, arrY)
 				{
+					if (arrX[0] == null)
+					{
+						arrX[0] = arrX[1];
+						arrY[0] = arrY[1];
+					}
 					context.moveTo(arrX[0], arrY[0]);
 					context.lineTo(arrX[1], arrY[1]);
 					context.closePath();

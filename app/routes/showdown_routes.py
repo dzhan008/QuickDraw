@@ -58,8 +58,7 @@ def displayDrawingPhase():
 def displayHostCanvas():
     data = request.get_json()
     game = lobbyManager.getGameManager(data['roomCode'])
-    return render_template('host_canvas.html', competitor_1=game.competitors[0], 
-                          competitor_2=game.competitors[1])
+    return render_template('host_canvas.html')
 
 @flask_app.route('/host_voting', methods=['GET', 'POST'])
 def displayHostVoting():

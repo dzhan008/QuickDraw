@@ -18,16 +18,17 @@
     
     <body style="background-image: url(static/images/GameBackground.png); background-size: cover">
         <div class="overlay"></div>
-        <div id="showdown">
+        <div id="hostCanvas"></div>
+        <div id="showdown" class="container">
             <div class="row">
                 <div class="col-sm-2">Room Code: <span id="roomCode"></span> </div>
                 <div class="col-sm-8 display-1 text-center" id="top-text">PRESS ON SCREEN TO READY</div>
                 <div class="col-sm-2"></div>
             </div>
     
-            <div class="row">
+            <div class="row" style="margin-top:23%;">
             <!--PLAYER ONE IMAGES -->
-                <div class="col-sm-3" align="center">
+                <div class="col-md-2" align="center">
                     <div class="player">
                             <img class="notReady" id="comp-one-ready">
                             <img class="modelOne" id="comp-one-model" src=" static/images/Idle{{modelOne}}.png"> <br>
@@ -35,14 +36,13 @@
                     </div>
                 </div>
             <!--CENTER IMAGES -->
-                <div class="col-sm-6" align="center">
+                <div class="col-md-8" align="center">
                     <img style="content: url(static/images/PressScreen.png)" id="press-screen">
                     <div class="timer-text" id="Timer"></div>
-                    <div id="Canvas"></div>
                     <p id=bottom-text></p>
                 </div>
             <!--PLAYER TWO IMAGES -->
-                <div class="col-sm-3" align="center">
+                <div class="col-md-2" align="center">
                     <div class="player">
                         <img class="notReady" id="comp-two-ready">
                         <img class="modelTwo" id="comp-two-model" src=" static/images/Idle{{modelTwo}}.png"> <br>

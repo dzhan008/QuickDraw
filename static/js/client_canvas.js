@@ -20,6 +20,7 @@ $( document ).ready(function() {
 	canvas.setAttribute('id', 'canvas');
 	canvasDiv.appendChild(canvas);
 	context = canvas.getContext("2d");
+	context.strokeStyle = "#cc99b5";
 	context.lineJoin = "round";
 	context.lineWidth = 5;
 
@@ -31,8 +32,16 @@ $( document ).ready(function() {
 	function start(e)
 	{
 		e.preventDefault();
-		prevX = e.pageX - this.offsetLeft;
-		prevY = e.pageY - this.offsetTop;
+		if (e.type == "mousemove")
+		{
+			prevX = e.pageX - this.offsetLeft;
+			prevY = e.pageY - this.offsetTop;
+		}
+		else //touch event
+		{
+			prevX = e.touches["0"].pageX - this.offsetLeft;
+			prevY = e.touches["0"].pageY - this.offsetTop;
+		}	
 		paint = true;
 	}
 

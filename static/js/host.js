@@ -147,7 +147,7 @@ function countdown()
                 contentType: 'application/json;charset=UTF-8',
                 success: function (data) {
                     console.log(data)  // display the returned data in the console.
-                    $('#Canvas').html(data);
+                    $('#hostCanvas').html(data);
                 }
             });
             //Set up timer for the drawing phase
