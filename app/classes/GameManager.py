@@ -13,7 +13,7 @@ class GameManager:
 
 		#-----Game Info-----#
 		self.roundCount = 0
-		self.roundMax = 2
+		self.roundMax = 4
 		self.state = 1 #1=Lobby 2=Pre 3=Showdown 4=Draw 4=Vote
 		self.currentPrompt = ''
 		self.isFair = False

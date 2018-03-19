@@ -122,7 +122,7 @@ def calcRoundWinner(masterRoomCode):
 @socketio.on('checkNextState')
 def checkNextState(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
-    if game.roundCount == game.roundMax: #game.validateEndGame():
+    if game.roundCount == game.roundMax or game.validateEndGame():
         emit('endGame', room=game.host)
     else:
         emit('displayScoreboard', room=game.host)
