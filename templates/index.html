@@ -28,7 +28,7 @@
             {
                 if (socket == 0)
                     socket = io.connect('http://' + document.domain + ':' + location.port);
-                    socket.on('serverMsg', function(msg)
+                socket.on('serverMsg', function(msg)
                 {
                 if (msg == 'return')
                 {

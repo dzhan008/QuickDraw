@@ -80,6 +80,8 @@ class LobbyManager:
 			return 2
 		elif self.checkDupUsername(gameCode, name):
 			return 3
+		elif self.GameManagerDict[gameCode].state > 1:
+			return 5
 		return 0
 
 	#check if the code given alrdy exists
@@ -101,11 +103,13 @@ class LobbyManager:
 		return 0
 
 	#returns the state of the game if the username exists
-	def checkExistingPlayer(self, gameCode, name, newSid):
-		game = self.GameManagerDict[gameCode]
-		if game.state == 1:
+	def checkExistingPlayer(self, gameCode="", name="", newSid=""):
+		if (gameCode == "" or name == "" or newSid == ""):
 			return 0
 		if gameCode in self.GameManagerDict.keys():
+			game = self.GameManagerDict[gameCode]
+			if game.state == 1:
+				return 0
 			for player in self.GameManagerDict[gameCode].activePlayers:
 				if player.username == name:
 					player.sid = newSid

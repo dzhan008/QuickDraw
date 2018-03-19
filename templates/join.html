@@ -91,6 +91,11 @@
                             alert('Invalid form');
                             return;
                         }
+                        else if(data['error'] == 5)
+                        {
+                            alert('Game has started! Please join as spectator instead');
+                            return;
+                        }
                         $('body').html(data);
 
                     }

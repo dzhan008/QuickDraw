@@ -193,6 +193,8 @@ function countdown()
             $('#comp-one-model').css('transform', 'scaleX(1)');
             $('#comp-two-model').css('transform', 'scaleX(-1)');
             //Set up timer for the drawing phase
+            $('#top-text').html("");
+            
             $(timerTag).hide(); //Hide big timer
             timerTag = '#corner-timer'; //Move the timer to the top
             //Time left will now be the suspense time.

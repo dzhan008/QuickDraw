@@ -80,6 +80,8 @@
                 {
                     socket.emit('disconnectGame', '{{code}}');
                     $('body').html(data);
+                    $('body').removeClass('lobby');
+                    $('body').addClass('home');   
                 }
             });
         }

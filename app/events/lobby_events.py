@@ -60,6 +60,7 @@ def spectatorJoin(gameCode):
     else:
         #Add player to spectator
         game.addSpectator(request.sid)
+        join_room(message[gameCode])
         gameState = game.state
         if gameState == 1: #lobby
             emit('spectatorState', {'gameState': gameState})
