@@ -35,7 +35,16 @@ class GameManager:
 					self.dcPlayers.append(self.activePlayers.index(player))
 				return 1 #return 1 if we found a player
 		return 0
-		
+	
+	def addSpectator(self, specSID):
+		self.spectators.append(specSID)
+
+	def removeSpectator(self, specSID):
+		if specSID in self.spectators:
+			self.spectators.remove(specSID)
+			return 1
+		return 0
+
 	#Test function to make  two random players competitors
 	def setCompetitors(self):
 		if len(self.competitors) == 1:

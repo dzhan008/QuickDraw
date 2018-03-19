@@ -57,15 +57,22 @@ def handle_connect():
 @socketio.on('disconnect')
 def handle_disconnect():
     print "Client disconnected"
+    print request.sid
     clients.remove(request.sid)
+    #check if it was a host that disconnected
     gameCode = LobbyManager.checkHostDisconnect(request.sid)
     if gameCode:
         emit('serverMsg', 'return', room=gameCode)
         return
+    
+    #check if a player inside a game disconnected
     userName = LobbyManager.getNameFromSID(request.sid)
-    hostSID = LobbyManager.removePlayer(request.sid)
     if userName != "":
+        hostSID = LobbyManager.removePlayer(request.sid)
         emit('playerLeave', userName, room=hostSID)
+
+    #remove sid if it was a spectator
+    LobbyManager.removeSpectator(request.sid)
 
 
 

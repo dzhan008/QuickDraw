@@ -23,12 +23,11 @@ def dcGame(gameCode):
 def checkExistUser(formData):
     print "check exists"
     gameState =  flask_app.config['LobbyManager'].checkExistingPlayer(formData['room_code'], formData['user'], request.sid)
-    isCompetitor = 0
 
     #if there are no registered user of that name yet
     #or if the game is still in the lobby
     if gameState == 0 or gameState == 1:
-        emit('playerState', {'gameState': gameState, 'isCompetitor': isCompetitor}, room=request.sid)
+        emit('playerState', {'gameState': gameState}, room=request.sid)
         return
     elif gameState > 1: #check if the player is a competitor
         game = flask_app.config['LobbyManager'].getGameManager(formData['room_code']);
@@ -50,6 +49,24 @@ def checkExistUser(formData):
 
 
 
+@socketio.on('spectatorJoin')
+def spectatorJoin(gameCode):
+    print 'Spectator Join'
+    game = flask_app.config['LobbyManager'].getGameManager(gameCode)
+    gameState = 0
+    if game == 0:
+        emit('spectatorState', {'gameState': gameState})
+        return
+    else:
+        #Add player to spectator
+        game.addSpectator(request.sid)
+        gameState = game.state
+        if gameState == 1: #lobby
+            emit('spectatorState', {'gameState': gameState})
+        elif gameState == 5: #voting
+            emit('votingPhase')
+        else:
+            emit('spectate_match')
 
 @socketio.on('playerJoin')
 def playerJoin(message):

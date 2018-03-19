@@ -28,7 +28,9 @@
                     {{ form.char_select(size=5) }}<br>
                 </p>
                 <p align="center">
-                    <button type="button" class="btn btn-success" id="player">Join as Player</button>
+                    <button type="button" class="btn btn-success" id="player">Join as Player</button><br>
+                    or
+                    <br>
                     <button type="button" class="btn btn-primary" id="spectator">Join as Spectator</button>
                 </p>
             </form>
@@ -38,6 +40,20 @@
     
     <script>
         $(document).ready(function() {
+        socket.on('spectatorState', function(msg)
+        {//Only handles error or lobby. Server handles the other game states
+            gameState = msg['gameState']
+            if (gameState == 0)
+            {
+                alert('Wrong Game Code');
+                return;
+            }
+            else if (gameState == 1) //Lobby
+            {
+                $('#content').html('Please wait for the game to start.');
+                return;
+            }
+        });
         socket.on('playerState', function(msg)
         {
             var gameCode = document.getElementsByName('room_code')[0].value;
@@ -88,7 +104,10 @@
             playerAction(e);
         });
         $('#spectator').click(function (e) {
-            //Put stuff here
+            spectatorAction(e)
+        });
+        $("#spectator").on("touchstart", function(e){
+            spectatorAction(e);
         });
         function playerAction(e)
         {
@@ -101,9 +120,15 @@
 
             socket.emit('checkExistUser', {user: name, room_code: gameCode}); 
         }
-        function spectatorAction()
+        function spectatorAction(e)
         {
+            e.stopPropagation();
+            e.preventDefault();
+            console.log("spectatorAction");
+            var gameCode = document.getElementsByName('room_code')[0].value;
+            setRoomCode(gameCode);
 
+            socket.emit('spectatorJoin', gameCode);
         }
         // Inject our CSRF token into our AJAX request.
         $.ajaxSetup({

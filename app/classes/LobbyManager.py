@@ -25,7 +25,20 @@ class LobbyManager:
 	def getGameManager(self, gameCode):
 		if gameCode in self.GameManagerDict.keys():
 			return self.GameManagerDict[gameCode]
+		else:
+			return 0
+	
+	def addSpectator(self, gameCode, specSID):
+		if gameCode in self.GameManagerDict.keys():
+			self.GameManagerDict[gameCode].addSpectator(specSID)
+			self.printGameInfo()
 
+	def removeSpectator(self, specSID):
+		for game in self.GameManagerDict.values():
+			if (game.removeSpectator(specSID)):
+				self.printGameInfo()
+				return
+	
 	#Adds the player to the GameManager for the room
 	def addPlayer(self, gameCode, playerObj):
 		if gameCode in self.GameManagerDict.keys():
@@ -50,6 +63,9 @@ class LobbyManager:
 		print len(self.GameManagerDict)
 		for game in self.GameManagerDict.values():
 			game.printPlayers()
+			print "Number of Spectators: " + str(len(game.spectators))
+			print "----------------------------"
+
 
 	#checks if the game with the code exists
 	def getHostSID(self, gameCode):
@@ -86,6 +102,9 @@ class LobbyManager:
 
 	#returns the state of the game if the username exists
 	def checkExistingPlayer(self, gameCode, name, newSid):
+		game = self.GameManagerDict[gameCode]
+		if game.state == 1:
+			return 0
 		if gameCode in self.GameManagerDict.keys():
 			for player in self.GameManagerDict[gameCode].activePlayers:
 				if player.username == name:
