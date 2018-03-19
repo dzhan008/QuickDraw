@@ -12,9 +12,10 @@ def setSpectator():
     spectators.append(request.sid)
 
 @socketio.on('ready')
-def ready():
+def ready(masterRoomCode):
     playerReady = ''
-    game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+    print 'Ready: ' + masterRoomCode
+    game = lobbyManager.getGameManager(masterRoomCode)
     players = game.activePlayers
     competitorSIDs = game.getCompetitorSIDs()
     #Check which player readied to display to host
@@ -34,8 +35,8 @@ def ready():
         emit('startTimer', {'data': x}, room=game.host)
 
 @socketio.on('unready')
-def unready():
-    game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+def unready(masterRoomCode):
+    game = lobbyManager.getGameManager(masterRoomCode)
     players = game.activePlayers
     competitorSIDs = game.getCompetitorSIDs()
     playerUnready = ''
@@ -62,14 +63,14 @@ def unready():
 #Starting Phase Events
 
 @socketio.on('startDrawing')
-def startDrawing():
-    game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+def startDrawing(masterRoomCode):
+    game = lobbyManager.getGameManager(masterRoomCode)
     game.currentPrompt = helper.generatePrompt()
     game.state = 4
 
 @socketio.on('canvasData')
 def displayDrawing(json):
-    game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+    game = lobbyManager.getGameManager(json['masterRoomCode'])
     competitorSIDs = game.getCompetitorSIDs()
     if request.sid == competitorSIDs[0]:
         emit('player1Data', json, room=game.host);
@@ -79,8 +80,9 @@ def displayDrawing(json):
 #Voting Phase Events
 
 @socketio.on('startVoting')
-def startVoting():
-    game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+def startVoting(masterRoomCode):
+    game = lobbyManager.getGameManager(masterRoomCode)
+    game.state = 5
     helper.tellGroup('endDrawing', game.getCompetitorSIDs())
     helper.tellGroup('votingPhase', game.getAudienceSIDs())
 
@@ -93,8 +95,8 @@ def choiceTwo():
     flask_app.config['playerTwoVotes'] += 1
 
 @socketio.on('calcRoundWinner')
-def calcRoundWinner():
-    game = lobbyManager.getGameManager(lobbyManager.UsersDict[request.sid])
+def calcRoundWinner(masterRoomCode):
+    game = lobbyManager.getGameManager(masterRoomCode)
     if flask_app.config['playerOneVotes'] > flask_app.config['playerTwoVotes']:
         game.activePlayers[game.competitors[0]].points += 1;
         emit('displayRoundWinner', { 'data': game.activePlayers[game.competitors[0]].username }, room=game.host)

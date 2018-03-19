@@ -4,11 +4,9 @@ import collections #for default dictionary
 class LobbyManager:
 
 	GameManagerDict = defaultdict(GameManager)
-	UsersDict = defaultdict(str)
 
 	def createGame(self, hostSID, gameCode):
 		newGame = GameManager(gameCode, hostSID)
-		self.UsersDict[hostSID] = gameCode
 		self.GameManagerDict[gameCode] = newGame
 
 	def removeGame(self, gameCode):
@@ -32,13 +30,11 @@ class LobbyManager:
 	def addPlayer(self, gameCode, playerObj):
 		if gameCode in self.GameManagerDict.keys():
 			self.GameManagerDict[gameCode].addPlayer(playerObj)
-			self.UsersDict[playerObj.sid] = gameCode
 			self.printGameInfo()
 
 	def removePlayer(self, sid):
 		for game in self.GameManagerDict.values():
 			if game.removePlayer(sid):
-				self.UsersDict.pop(sid, None)
 				self.printGameInfo()
 				return game.host
 		return 0

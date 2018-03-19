@@ -46,7 +46,7 @@ def host():
 
 @flask_app.route('/client_showdown', methods=['GET', 'POST'])
 def showdown():
-    return render_template('client_showdown.html');
+    return render_template('client_showdown.html')
 
 #Displays a client canvas for a player who needs to draw
 @flask_app.route('/client_draw', methods=['GET', 'POST'])

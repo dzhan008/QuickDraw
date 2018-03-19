@@ -6,31 +6,33 @@
 	</head>
 	<body id="Main">
 		<p align="center">Quick Draw!</p><br>
-        <form style="align-content: center;margin:0 auto;" action="/index" method="post">
-            {{ form.hidden_tag() }}
-            <p align="center">
-                {{ form.room_code.label }}<br>
-                {{ form.room_code(size=32) }}<br>
-                {% for error in form.room_code.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-            </p>
-            <p align="center">
-                {{ form.name.label }}<br>
-                {{ form.name(size=32) }}<br>
-                {% for error in form.name.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-            </p>
-            <p align="center">
-                {{ form.char_select.label }}<br>
-                {{ form.char_select(size=5) }}<br>
-            </p>
-            <p align="center">
-                <button type="button" class="btn btn-success" id="player">Join as Player</button>
-                <button type="button" class="btn btn-primary" id="spectator">Join as Spectator</button>
-            </p>
-        </form>
+        <div id="content">
+            <form style="align-content: center;margin:0 auto;" action="/index" method="post">
+                {{ form.hidden_tag() }}
+                <p align="center">
+                    {{ form.room_code.label }}<br>
+                    {{ form.room_code(size=32) }}<br>
+                    {% for error in form.room_code.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p align="center">
+                    {{ form.name.label }}<br>
+                    {{ form.name(size=32) }}<br>
+                    {% for error in form.name.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p align="center">
+                    {{ form.char_select.label }}<br>
+                    {{ form.char_select(size=5) }}<br>
+                </p>
+                <p align="center">
+                    <button type="button" class="btn btn-success" id="player">Join as Player</button>
+                    <button type="button" class="btn btn-primary" id="spectator">Join as Spectator</button>
+                </p>
+            </form>
+        </div>
         
 	</body>
     
@@ -42,8 +44,8 @@
 
             console.log(msg['gameState']);
             gameState = msg['gameState'];
-            setRoomCode(gameCode);
-            if (gameState == 0)
+            
+            if (gameState == 0 || gameState == 1)
             {
                 $.ajax({
                     type: "POST",
@@ -51,6 +53,8 @@
                     data: $('form').serialize(), // serializes the form's elements.
                     success: function (data) {
                         console.log(data);
+                        if (data['error']>0) 
+                            setRoomCode("");
                         if (data['error'] == 1)
                         {
                             alert("Wrong Game Code");
@@ -76,19 +80,6 @@
                     }
                 });
             }
-            else
-            {
-                $.ajax({
-                    type: "POST",
-                    url: '/rejoin',
-                    data: JSON.stringify({gameState: msg['gameState'], isCompetitor: msg['isCompetitor'], room_code: gameCode}),
-                    contentType: 'application/json;charset=UTF-8', // serializes the form's elements.
-                    success: function (data) {
-                        console.log(data);
-                        //$('body').html(data);
-                    }
-                });
-            }
         });
         $('#player').click(function (e) {
             playerAction(e);           
@@ -106,6 +97,8 @@
             console.log("playerAction");
             var name = document.getElementsByName('name')[0].value;
             var gameCode = document.getElementsByName('room_code')[0].value;
+            setRoomCode(gameCode);
+
             socket.emit('checkExistUser', {user: name, room_code: gameCode}); 
         }
         function spectatorAction()

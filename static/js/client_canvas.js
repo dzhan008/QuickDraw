@@ -20,6 +20,8 @@ $( document ).ready(function() {
 	canvas.setAttribute('id', 'canvas');
 	canvasDiv.appendChild(canvas);
 	context = canvas.getContext("2d");
+	context.lineJoin = "round";
+	context.lineWidth = 5;
 
 
 	if(typeof G_vmlCanvasManager != 'undefined') {
@@ -56,7 +58,7 @@ $( document ).ready(function() {
 			if(paint){
 				var sliceClickX = [prevX, currX];
 				var sliceClickY = [prevY, currY];
-				socket.emit('canvasData', {sliceClickX, sliceClickY});
+				socket.emit('canvasData', {sliceClickX, sliceClickY, masterRoomCode});
 				context.moveTo(sliceClickX[0], sliceClickY[0]);
 				context.lineTo(sliceClickX[1], sliceClickY[1]);
 				context.closePath();

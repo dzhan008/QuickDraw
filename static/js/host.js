@@ -139,7 +139,7 @@ function countdown()
                 });
             }
             //Start the drawing phase for the clients, and also grab the main real time canvases of both clients
-            socket.emit('startDrawing');
+            socket.emit('startDrawing', roomCode);
             $.ajax({
                 type: "POST",
                 url: '/host_canvas',
@@ -177,7 +177,7 @@ function countdown()
             });
             
             //Starts the voting phase for the clients.
-            socket.emit('startVoting');
+            socket.emit('startVoting', roomCode);
             
             //Set up timer for the voting phase
             timeLeft = MAX_VOTING_TIME;
@@ -187,7 +187,7 @@ function countdown()
         else if(timerType == phases.votingPhase)
         {
             //Do some emit to find out the winner from the server and display it.
-            socket.emit('calcRoundWinner');
+            socket.emit('calcRoundWinner', roomCode);
             //END GAME SOMEWHERE HERE
             //TODO:
             //HAVE TWO SOCKET FUNCTIONS TO CHANGE TIMERTYPE DEPENDING ON IF GAME IS OVER NOT

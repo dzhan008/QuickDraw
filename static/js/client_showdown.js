@@ -49,11 +49,11 @@ $(document).ready(function(){
 //Handles ready case for mouse and touch inputs.
 function handleReady()
 {
-    socket.emit('ready');
+    socket.emit('ready', masterRoomCode);
 }
 
 //Handles unready case for mouse and touch inputs.
 function handleUnready()
 {
-    socket.emit('unready');
+    socket.emit('unready', masterRoomCode);
 }
