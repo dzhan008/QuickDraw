@@ -106,7 +106,9 @@ def calcRoundWinner(masterRoomCode):
     else:
         emit('displayRoundWinner', { 'data' : 'No One'}, room=game.host)
 
-    #TODO: CHANGE FLASK_APP CONFIG AND ADD CASES FOR IF GAME IS OVER
+@socketio.on('checkNextState')
+def checkNextState(masterRoomCode):
+    game = lobbyManager.getGameManager(masterRoomCode)
     if game.roundCount == game.roundMax:
         emit('endGame', room=game.host)
     else:

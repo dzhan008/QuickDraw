@@ -20,19 +20,19 @@ $(document).ready(function(){
     });
     
 //Mouse events
-    $("button").mousedown(function(){
+    $("#fire-button").mousedown(function(){
         handleReady();
     });
 
-    $("button").mouseup(function(){
+    $("#fire-button").mouseup(function(){
         handleUnready();
     });
 //Touch events
-    $("button").on("touchstart", function(){
+    $("#fire-button").on("touchstart", function(){
         handleReady();
     });
     
-    $("button").on("touchend", function(){
+    $("#fire-button").on("touchend", function(){
         handleUnready();
     }); 
     

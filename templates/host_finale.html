@@ -7,14 +7,26 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <!-- Style Sheets --->
         <link href="{{ url_for('static', filename='css/scoreboard.css') }}" rel="stylesheet">
-        <link href="../static/css/scoreboard.css" rel="stylesheet">
+        <link href="../static/css/finale.css" rel="stylesheet">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     </head>
     
     <body style="background-image:url(../static/images/ScoreBackground.png); background-size: cover;">
+ 
         <div class="container">
-            <h1>And the winner is {{username}}!</h1>
-            <img id="winner">
+            <div class="row">
+                <div class="col-6">
+                    <h1>And the winner is...</h1>
+                    <div id="winner-container" class="popout">
+                    <img src="../static/images/Idle2.png" id="winner">
+                    <h1>{{username}}!</h1>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div id="screen">
+                    </div>
+                </div>
+            </div>
         </div>
 
     </body>
@@ -22,7 +34,74 @@
 </html>
 
 <script>
-    $('#winner').attr('src', '/static/images/Idle' + {{imageIndex}} + '.png');
+    //$('#winner').attr('src', '/static/images/Idle' + {{imageIndex}} + '.png');
+    var names = [
+        "Quynh Nguyen",
+        "Darren Houn",
+        "David Zhang",
+        "Bleh - 0 Likes",
+        "Meepers",
+        "Pinhead Larry"
+    ];
+    var titles = [
+        "Programmer/Designer",
+        "Programmer",
+        "Programmer",
+        "Most Likes",
+        "Most Votes On One Drawing",
+        "Least Votes On One Drawing"
+    ];
+    
+    function writeName()
+    {
+        var i = 0,
+            player,
+            name,
+            title,
+            bottom;
+        
+        var interval = setInterval(function() {
+            player = '.player.' + i;
+            name = '.name.' + i;
+            title = '.title.' + i;
+            $('<div></div>').appendTo('#screen').addClass('player '+i);
+            $('<h4></h4>').appendTo(player).addClass('title '+i);
+            $('<h2></h2>').appendTo(player).addClass('name '+i);
+            $(name).text(names[i]);
+            $(title).text(titles[i]);
+            i++;
+            if (i >= names.length) 
+            clearInterval(interval);
+           }, 2000);
+    }
+
+    function fadeInText()
+    {
+        var i = 0;
+        if(i < 150)
+        {
+            var interval = setInterval(function(){
+                            $('h2').css('opacity', '+=0.01');
+                            $('h4').css('opacity', '+=0.01');
+                            i++;
+            }, 50);
+        }
+    }
+    
+    function scrollText()
+    {
+        var interval = setInterval(function(){
+                            $('.player').css('bottom', '+=1px');
+                            $('.player').css('opacity', '-=0.0008');
+        }, 15);
+    }
+    
+    $(function(){
+        writeName();
+        fadeInText();
+        scrollText();
+    })
+    
 </script>
 
 

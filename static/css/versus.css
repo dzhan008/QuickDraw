@@ -1,11 +1,15 @@
 .upper-text
 {
+    left: -1000px;
     font-size: 80pt;
     margin-top: 10%;
+    position: absolute;
 }
 
 .lower-text
 {
+    left: 1000px;
     font-size: 80pt;
     margin-top: 65%;
+    position: absolute;
 }
