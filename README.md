@@ -1,6 +1,20 @@
 # QuickDraw
 
-This is a Jackbox-like game for CS179!
+It is 1812. Right in the outskirts of town stands you and your opponent. You are gripping your holster tightly, squaring off with your rival waiting for the cue. Time passes, and you cannot remain any longer until-
+
+BANG!
+
+You unleash a pen and paper from your holster. The top of the paper reads “Gun” and you quickly start sketching out the drawing. You are frantically tracing your art, making sure that it is perfect. Just one more stroke and then it is complete!
+
+RING!
+
+Time is up. You both stop and hand your drawings to the referee who shows them to the audience. The audience cheers loudly for yours, and the duel has been won. You sigh in relief and blow on your notepad before putting it back to your holster.
+
+Welcome to Quick Draw.
+
+Quick draw is a fun party game that involves quick reflexes and hilarious drawings! Face off in an intense one-on-one western showdown against your friends, but instead of drawing your guns, you actually have to draw! Other players will vote on who had the best “quick draw”. All you need is your smartphone. Need at least 3 players.
+
+Want to play now? Click [here](https://quick-draw-game.herokuapp.com/)!
 
 # Creating a new Virtual Environment
 
