@@ -60,7 +60,9 @@ The game will play until everyone has played a certain amount of games. The play
 # Credits
 
 Darren Houn: Programmer
+
 Quynh Nguyen: Programmer, Artist
+
 David Zhang: Programmer
 
 
