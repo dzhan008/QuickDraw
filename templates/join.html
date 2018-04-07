@@ -40,6 +40,7 @@
     
     <script>
         $(document).ready(function() {
+
         socket.on('spectatorState', function(msg)
         {//Only handles error or lobby. Server handles the other game states
             gameState = msg['gameState']
@@ -56,6 +57,7 @@
         });
         socket.on('playerState', function(msg)
         {
+            console.log("playerState");
             var gameCode = document.getElementsByName('room_code')[0].value;
 
             console.log(msg['gameState']);
@@ -103,16 +105,18 @@
             }
         });
         $('#player').click(function (e) {
-            playerAction(e);           
+            console.log("click");
+            if (isMobile == false) playerAction(e);           
         });
         $("#player").on("touchstart", function(e){
-            playerAction(e);
+            console.log("touch");
+            if (isMobile == true) playerAction(e);
         });
         $('#spectator').click(function (e) {
-            spectatorAction(e)
+            if (isMobile == false) spectatorAction(e)
         });
         $("#spectator").on("touchstart", function(e){
-            spectatorAction(e);
+            if (isMobile == true) spectatorAction(e);
         });
         function playerAction(e)
         {
@@ -127,7 +131,6 @@
                 return;
             }
             setRoomCode(gameCode);
-
             socket.emit('checkExistUser', {user: name, room_code: gameCode}); 
         }
         function spectatorAction(e)
