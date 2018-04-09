@@ -1,6 +1,6 @@
 var timeLeft = 0;
 var timerTag = '#Timer';
-const phases = Object.freeze( 
+var phases = Object.freeze( 
 {
     prePhase: 0,
     suspensePhase: 1,
@@ -14,15 +14,15 @@ const phases = Object.freeze(
 });
 var timerType = phases.prePhase;
 var timerID;
-var roomCode;
+var hostRoomCode;
 var suspenseTime = 0;
-var MAX_COUNTDOWN_TIME = 5;
-var MAX_DRAWING_TIME = 10;
-var MAX_VOTING_TIME = 5;
-var MAX_DISPLAY_WINNER_TIME = 5;
-var MAX_DISPLAY_SCOREBOARD_TIME = 5;
+var MAX_COUNTDOWN_TIME = 3;
+var MAX_DRAWING_TIME = 10; //10
+var MAX_VOTING_TIME = 15;  //15
+var MAX_DISPLAY_WINNER_TIME = 5; //5
+var MAX_DISPLAY_SCOREBOARD_TIME = 5; //5
 var MAX_TRANSITION_TIME = 1;
-var MAX_CREDITS_TIME = 30;
+var MAX_CREDITS_TIME = 30; //30
 
 var suspenseAudio = new Audio('static/audio/showdown.mp3');
 
@@ -36,7 +36,14 @@ var timeLeft = Math.floor((Math.random() * (maxTime - minTime + 1) + minTime));
 
 $(document).ready(function(){
     
-    roomCode = $('#roomCode').html();
+    if (window.hostRoomCode != undefined)
+    {
+        console.log('Warning: Duplicate host file detected.');
+        hostRoomCode = $('#roomCode').html();
+        return;
+    }
+    
+    hostRoomCode = $('#roomCode').html();
         
     //Grabs random time from server and starts timer
     socket.on('startTimer', function(msg){
@@ -227,7 +234,7 @@ function countdown()
                 });
             }
             //Start the drawing phase for the clients, and also grab the main real time canvases of both clients
-            socket.emit('startDrawing', roomCode);
+            socket.emit('startDrawing', hostRoomCode);
             $.ajax({
                 type: "POST",
                 url: '/host_canvas',
@@ -259,7 +266,7 @@ function countdown()
             $('#top-text').html('Vote for the best drawing!');
             socket.emit('stopDrawing');
             //Starts the voting phase for the clients.
-            socket.emit('startVoting', roomCode);
+            socket.emit('startVoting', hostRoomCode);
             
             //Set up timer for the voting phase
             timeLeft = MAX_VOTING_TIME;
@@ -272,14 +279,14 @@ function countdown()
         else if(timerType == phases.votingPhase)
         {
             //Do some emit to find out the winner from the server and display it.
-            socket.emit('calcRoundWinner', roomCode);
+            socket.emit('calcRoundWinner', hostRoomCode);
             timeLeft = MAX_DISPLAY_SCOREBOARD_TIME;
             timerID = setInterval(countdown, 1000);
             timerType = phases.displayWinnerPhase;
         }
         else if(timerType == phases.displayWinnerPhase)
         {
-            socket.emit('checkNextState', roomCode);
+            socket.emit('checkNextState', hostRoomCode);
             fade();
             suspenseAudio.pause();
             suspenseAudio.currentTime = 0;
@@ -289,7 +296,7 @@ function countdown()
             $.ajax({
                 type:'POST',
                 url:'/host_scoreboard',
-                data: JSON.stringify( {'roomCode' : roomCode }),
+                data: JSON.stringify( {'roomCode' : hostRoomCode }),
                 contentType: 'application/json;charset=UTF-8',
                 success: function(data)
                 {
@@ -313,11 +320,11 @@ function countdown()
         }
         else if(timerType == phases.loadingPhase)
         {
-            console.log(roomCode);
+            console.log(hostRoomCode);
             $.ajax({
                 type:'POST',
                 url:'/host_showdown',
-                data: JSON.stringify( {'roomCode' : roomCode }),
+                data: JSON.stringify( {'roomCode' : hostRoomCode }),
                 contentType: 'application/json;charset=UTF-8',
                 success: function(data)
                 {
@@ -325,7 +332,7 @@ function countdown()
                     $('#showdown').html(data);
                     $('body').removeClass('scoreboardBG');
                     $('body').addClass('home');
-                    $('#roomCode').html(roomCode);
+                    $('#roomCode').html(hostRoomCode);
                     $('#hostCanvas').empty();
                     unfade();
                 }
@@ -339,7 +346,7 @@ function countdown()
             $.ajax({
                 type:'POST',
                 url:'/host_finale',
-                data: JSON.stringify( {'roomCode' : roomCode }),
+                data: JSON.stringify( {'roomCode' : hostRoomCode }),
                 contentType: 'application/json;charset=UTF-8',
                 success: function(data)
                 {
@@ -347,7 +354,7 @@ function countdown()
                     $('#showdown').html(data);
                     $('body').removeClass('scoreboardBG');
                     $('body').addClass('home');
-                    $('#roomCode').html(roomCode);
+                    $('#roomCode').html(hostRoomCode);
                     $('#hostCanvas').empty();
                     unfade();
                 }
@@ -363,10 +370,11 @@ function countdown()
             url:'/index',
             success: function(data)
             {
-                socket.emit('disconnectGame', roomCode);
+                socket.emit('disconnectGame', hostRoomCode);
                 $('body').html(data);
             }
             });
+            timerType = phases.prePhase;
         }
     }
     else
