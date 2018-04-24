@@ -1,4 +1,5 @@
 import random
+import sys
 
 class GameManager:
 	def __init__(self, gameCode, hostSID):
@@ -13,10 +14,10 @@ class GameManager:
 
 		#-----Game Info-----#
 		self.roundCount = 0
-		self.roundMax = 4
+		self.gamesMax = 6 # The max amount of games one player can play
+		self.roundMax = 2 # The max amount of rounds per game
 		self.state = 1 #1=Lobby 2=Pre 3=Showdown 4=Draw 4=Vote
 		self.currentPrompt = ''
-		self.isFair = False
 		self.gameEnd = False
 		self.currentVotes = 0
 		self.playerOneVotes = 0
@@ -114,7 +115,7 @@ class GameManager:
 				self.playersChoose.append(i)
 				print ("\nPlayers in queue: ")
 				print (self.activePlayers[i].username)
-               	for i in range(len(self.playersChoose)):
+		for i in range(len(self.playersChoose)):
 			print ("--------------> Players actually in queue: ")
 			print (self.activePlayers[self.playersChoose[i]].username)
 	
@@ -131,18 +132,36 @@ class GameManager:
 					print ("\nPlayers in queue(len(1)): ")
 					print (self.activePlayers[i].username)
 
-	def validateEndGame(self):
+	#Checks if all players have played the same number of games already.
+	def validateSameGamesPlayed(self):
+		#Get the number of games the first player has played
 		temp = self.activePlayers[0].gamesPlayed
+
+		#Check each player and see if their number of games played is the same
+		#as the first player's. If not, then not all players have played the same
+		#amount of games.
 		for i in range(len(self.activePlayers)):
-			if self.activePlayers[i].gamesPlayed == 4:
-				self.gameEnd = True
+			if self.activePlayers[i].gamesPlayed != temp:
+				return False
+		return True
+
+	def validateEndGame(self):
+		isFair = True
+		#Check if any player has played more than the maximum allow games
+		#This prevents the game from dragging on for too long
 		for i in range(len(self.activePlayers)):
-			if self.activePlayers[i].gamesPlayed == temp:
-				self.isFair = True
-			else:
-				self.isFair = False
-		if self.isFair == True:
-			if self.activePlayers[0].gamesPlayed > 1:
+			if self.activePlayers[i].gamesPlayed == self.gamesMax:
+				return True
+
+		#If all players played the same amount of games, check if their total
+		#games played is more than the amount every player should play
+		#End the game if this is true.
+		if self.validateSameGamesPlayed():
+			#Increment the round count
+			self.roundCount += 1
+			print str(self.roundCount) + ' rounds has been played!'
+			sys.stdout.flush()
+			if self.roundCount >= self.roundMax:
 				self.gameEnd = True
 			else:
 				self.gameEnd = False

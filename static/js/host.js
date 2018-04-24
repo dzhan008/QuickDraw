@@ -12,14 +12,15 @@ var phases = Object.freeze(
     loadingPhase: 7,
     endPhase: 8
 });
-var timerType = phases.prePhase;
+var nextPhase = phases.prePhase;
+var currentPhase = phases.prePhase;
 var timerID;
 var hostRoomCode;
 var suspenseTime = 0;
 var MAX_COUNTDOWN_TIME = 3;
 var MAX_DRAWING_TIME = 10; //10
 var MAX_VOTING_TIME = 15;  //15
-var MAX_DISPLAY_WINNER_TIME = 5; //5
+var MAX_DISPLAY_WINNER_TIME = 3; //3
 var MAX_DISPLAY_SCOREBOARD_TIME = 5; //5
 var MAX_TRANSITION_TIME = 1;
 var MAX_CREDITS_TIME = 30; //30
@@ -61,16 +62,22 @@ $(document).ready(function(){
     });
     
     socket.on('displayReady', function(msg) {
-        var competitor = '#comp-' + msg.data + '-ready';
-        console.log(competitor);
-        $(competitor).removeClass('notReady').addClass('ready');
-        playClip('revolver_click');
+        if(currentPhase == phases.prePhase)
+        {
+            var competitor = '#comp-' + msg.data + '-ready';
+            console.log(competitor);
+            $(competitor).removeClass('notReady').addClass('ready');
+            playClip('revolver_click');
+        }
     });
     
     socket.on('displayUnready', function(msg) {
-        var competitor = '#comp-' + msg.data + '-ready';
-        console.log(competitor);
-        $(competitor).removeClass('ready').addClass('notReady');
+        if(currentPhase == phases.prePhase)
+        {
+            var competitor = '#comp-' + msg.data + '-ready';
+            console.log(competitor);
+            $(competitor).removeClass('ready').addClass('notReady');
+        }
     });
     //Stops timer due to false start on one of the client
     socket.on('falseStart', function(){
@@ -80,7 +87,7 @@ $(document).ready(function(){
         $(timerTag).hide();
         $('#press-screen').show();
         $('#hostCanvas').empty();
-        timerType = phases.prePhase;
+        currentPhase = phases.prePhase;
         $('#comp-one-ready').removeClass('ready').addClass('notReady');
         $('#comp-two-ready').removeClass('ready').addClass('notReady');
         $('#comp-one-ready').css('opacity','1');
@@ -99,21 +106,21 @@ $(document).ready(function(){
         $('#top-text').html("The winner is " + msg.data + "!"); 
     });
     
-    socket.on('displayScoreboard', function(){
-        //Set up timer for the scoreboard transition
-        timeLeft = 1;
-        timerID = setInterval(countdown, 1000);
-        timerType = phases.scoreboardPhase;
-    });
-    
     socket.on('displayPrompt', function(msg){
         $('#top-text').html('Prompt: ' + msg.data);
     });
     
+    socket.on('nextGame', function(msg){
+        nextPhase = phases.loadingPhase;
+        
+    });
+    
+    socket.on('displayScoreboard', function(){
+        nextPhase = phases.scoreboardPhase;
+    });
+    
     socket.on('endGame', function(){
-        timeLeft = 1;
-        timerID = setInterval(countdown, 1000);
-        timerType = phases.endPhase;
+        nextPhase = phases.endPhase;
     });
     
     socket.on('skipVoting', function(){
@@ -183,11 +190,20 @@ function unfade()
                         // Animation complete.
     });
 }
+
+//Set a new timer with the provided time and the phase to attach the timer to.
+function setTimer(time, phase)
+{
+    timeLeft = time;
+    timerID = setInterval(countdown, 1000);
+    currentPhase = phase;
+}
+
 //Countdown timer for all phases
 function countdown() 
 {
     //Change the timer display
-    if(timerType == phases.prePhase || timerType == phases.drawingPhase || timerType == phases.votingPhase)
+    if(currentPhase == phases.prePhase || currentPhase == phases.drawingPhase || currentPhase == phases.votingPhase)
     {
         $(timerTag).html(timeLeft);    
     }
@@ -195,7 +211,7 @@ function countdown()
     {
         //Turns off timer
         clearTimeout(timerID);
-        if(timerType == phases.prePhase)
+        if(currentPhase == phases.prePhase)
         {
             //Change the scale of the models to make them turn their backs
             $('#comp-one-model').css('transform', 'scaleX(1)');
@@ -207,9 +223,9 @@ function countdown()
             timerTag = '#corner-timer'; //Move the timer to the top
             //Time left will now be the suspense time.
             $(timerTag).show();
-            timeLeft = suspenseTime;
-            timerID = setInterval(countdown, 1000);
-            timerType = phases.suspensePhase;
+            
+            //Set up the new timer and change phases
+            setTimer(suspenseTime, phases.suspensePhase);
             //Create an audio object/promise and play it
             var playPromise = suspenseAudio.play();
 
@@ -221,7 +237,7 @@ function countdown()
                 });
             }
         }
-        else if(timerType == phases.suspensePhase)
+        else if(currentPhase == phases.suspensePhase)
         {
             //Create an audio object/promise and play it
             var audio = new Audio('static/audio/Cow.mp3');
@@ -257,12 +273,9 @@ function countdown()
             $('#comp-two-model').css('transform', 'scaleX(1)');
             
             //Changes phases
-            timeLeft = MAX_DRAWING_TIME;
-            timerID = setInterval(countdown, 1000);
-            timerType = phases.drawingPhase;
-            
+            setTimer(MAX_DRAWING_TIME, phases.drawingPhase);
         } 
-        else if(timerType == phases.drawingPhase)
+        else if(currentPhase == phases.drawingPhase)
         {
             $('#top-text').html('Vote for the best drawing!');
             socket.emit('stopDrawing');
@@ -270,29 +283,25 @@ function countdown()
             socket.emit('startVoting', hostRoomCode);
             
             //Set up timer for the voting phase
-            timeLeft = MAX_VOTING_TIME;
-            timerID = setInterval(countdown, 1000);
-            timerType = phases.votingPhase;
+            setTimer(MAX_VOTING_TIME, phases.votingPhase);
             
             $('#comp-one-model').attr('src', 'static/images/Idle' + modelOneIndex + '.png' );
             $('#comp-two-model').attr('src', 'static/images/Idle' + modelTwoIndex + '.png');
         }
-        else if(timerType == phases.votingPhase)
+        else if(currentPhase == phases.votingPhase)
         {
             //Do some emit to find out the winner from the server and display it.
             socket.emit('calcRoundWinner', hostRoomCode);
-            timeLeft = MAX_DISPLAY_SCOREBOARD_TIME;
-            timerID = setInterval(countdown, 1000);
-            timerType = phases.displayWinnerPhase;
+            setTimer(MAX_DISPLAY_WINNER_TIME, phases.displayWinnerPhase);
         }
-        else if(timerType == phases.displayWinnerPhase)
+        else if(currentPhase == phases.displayWinnerPhase)
         {
             socket.emit('checkNextState', hostRoomCode);
-            fade();
+            setTimer(MAX_TRANSITION_TIME, phases.transitionPhase);
             suspenseAudio.pause();
             suspenseAudio.currentTime = 0;
         }
-        else if(timerType == phases.scoreboardPhase)
+        else if(currentPhase == phases.scoreboardPhase)
         {
             $.ajax({
                 type:'POST',
@@ -308,18 +317,17 @@ function countdown()
                     unfade();
                 }
             });
-            timeLeft = MAX_DISPLAY_SCOREBOARD_TIME;
-            timerID = setInterval(countdown, 1000);
-            timerType = phases.transitionPhase;
+            setTimer(MAX_DISPLAY_SCOREBOARD_TIME, phases.transitionPhase);
+            //Force the next phase to be loading since we want a fade transition
+            //to it
+            nextPhase = phases.loadingPhase;
         }
-        else if(timerType == phases.transitionPhase)
+        else if(currentPhase == phases.transitionPhase)
         {
             fade();
-            timerLeft = MAX_TRANSITION_TIME;
-            timerID = setInterval(countdown, 1000);
-            timerType = phases.loadingPhase;
+            setTimer(MAX_TRANSITION_TIME, nextPhase);
         }
-        else if(timerType == phases.loadingPhase)
+        else if(currentPhase == phases.loadingPhase)
         {
             console.log(hostRoomCode);
             $.ajax({
@@ -339,9 +347,9 @@ function countdown()
                 }
             });
             //Start the new round here.
-            timerType = phases.prePhase;
+            currentPhase = phases.prePhase;
         }
-        else if(timerType == phases.endPhase)
+        else if(currentPhase == phases.endPhase)
         {
             //Declare the winner here, but make sure to grab stats in flask route
             $.ajax({
@@ -360,14 +368,12 @@ function countdown()
                     unfade();
                 }
             });
-            timeLeft = MAX_CREDITS_TIME;
-            timerID = setInterval(countdown, 1000);
-            timerType = phases.bootPhase;
+            setTimer(MAX_CREDITS_TIME, phases.bootPhase)
         }
-        else if(timerType == phases.bootPhase)
+        else if(currentPhase == phases.bootPhase)
         {
             socket.emit('disconnectGame', hostRoomCode);
-            timerType = phases.prePhase;
+            currentPhase = phases.prePhase;
         }
     }
     else

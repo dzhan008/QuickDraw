@@ -3,18 +3,6 @@ var displayText = document.getElementById('MainText');
 var prompt = "";
 $(document).ready(function(){
 
-//Provides a display of how many players are ready.
-    socket.on('displayready', function(msg) {
-        console.log('Incrementing Ready counter.');
-        document.getElementById('PlayersReady').innerHTML = msg.data + " Players Ready";
-    });
-    
-//Handles case that someone let go of the screen too early.
-    socket.on('falseStart', function() {
-        console.log('False Start!');
-        displayText.innerHTML = 'Someone let go early! False start!';
-    });
-
     socket.on('endDrawing', function() {
         $('#content').empty(); 
     });

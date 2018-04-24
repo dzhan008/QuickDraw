@@ -13,26 +13,25 @@ def setSpectator():
 
 @socketio.on('ready')
 def ready(masterRoomCode):
-    playerReady = ''
-    print 'Ready: ' + masterRoomCode
     game = lobbyManager.getGameManager(masterRoomCode)
-    players = game.activePlayers
-    competitorSIDs = game.getCompetitorSIDs()
-    #Check which player readied to display to host
-    if request.sid == competitorSIDs[0]:
-        playerReady = 'one'
-        players[game.competitors[0]].ready = True
-    elif request.sid == competitorSIDs[1]:
-        playerReady = 'two'
-        players[game.competitors[1]].ready = True
-
-    emit('displayReady', {'data' : playerReady}, room=game.host)
-    if players[game.competitors[0]].ready == True and players[game.competitors[1]].ready == True:
-        players[game.competitors[0]].ready = False
-        players[game.competitors[1]].ready = False
-        x = helper.generateSuspenseTime()
-        game.state = 3
-        emit('startTimer', {'data': x}, room=game.host)
+    if game.state == 2:
+        playerReady = ''
+        print 'Ready: ' + masterRoomCode
+        players = game.activePlayers
+        competitorSIDs = game.getCompetitorSIDs()
+        #Check which player readied to display to host
+        if request.sid == competitorSIDs[0]:
+            playerReady = 'one'
+            players[game.competitors[0]].ready = True
+        elif request.sid == competitorSIDs[1]:
+            playerReady = 'two'
+            players[game.competitors[1]].ready = True
+        emit('displayReady', {'data' : playerReady}, room=game.host)
+        #If both players have readied
+        if players[game.competitors[0]].ready == True or players[game.competitors[1]].ready == True:
+            x = helper.generateSuspenseTime()
+            game.state = 3
+            emit('startTimer', {'data': x}, room=game.host)
 
 @socketio.on('unready')
 def unready(masterRoomCode):
@@ -109,24 +108,34 @@ def calcRoundWinner(masterRoomCode):
         game.activePlayers[game.competitors[0]].points += 1;
         game.activePlayers[game.competitors[0]].updateWinStreak(True)
         game.activePlayers[game.competitors[1]].updateWinStreak(False)
-        emit('displayRoundWinner', { 'data': game.activePlayers[game.competitors[0]].username, 'player1Votes': game.playerOneVotes, 'player2Votes': game.playerTwoVotes}, room=game.host)
+        emit('displayRoundWinner', { 'data': game.activePlayers[game.competitors[0]].username, 
+        'player1Votes': game.playerOneVotes, 'player2Votes': game.playerTwoVotes}, room=game.host)
     elif game.playerTwoVotes > game.playerOneVotes:
         game.activePlayers[game.competitors[1]].points += 1;
         game.activePlayers[game.competitors[1]].updateWinStreak(True)
         game.activePlayers[game.competitors[0]].updateWinStreak(False)
-        emit('displayRoundWinner', { 'data' : game.activePlayers[game.competitors[1]].username, 'player1Votes': game.playerOneVotes, 'player2Votes': game.playerTwoVotes }, room=game.host)
+        emit('displayRoundWinner', { 'data' : game.activePlayers[game.competitors[1]].username, 
+        'player1Votes': game.playerOneVotes, 'player2Votes': game.playerTwoVotes }, room=game.host)
     else:
         emit('displayRoundWinner', { 'data' : 'No One'}, room=game.host)
     game.resetPlayerVotes()
 
+#Main event function that transitions the game from 3 key states:
+#1. Moving to the end of the game
+#2. Moving to the next set of players
+#3. Moving to the scoreboard screen
 @socketio.on('checkNextState')
 def checkNextState(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
-    if game.roundCount == game.roundMax or game.validateEndGame():
+    if game.validateEndGame():
+        #End the game
         emit('endGame', room=game.host)
-    else:
+    elif game.validateSameGamesPlayed():
+        #Move to the next round
         emit('displayScoreboard', room=game.host)
-        game.roundCount += 1
+    else:
+        #Move to the next set of players
+        emit('nextGame', room=game.host)
 
 def checkVotes(game):
     game.currentVotes += 1
