@@ -1,6 +1,8 @@
 <html>
 	<head>
 		<title>{{ title }} - Quick Draw</title>
+        <script src="http://code.jquery.com/jquery-1.8.3.min.js">
+        </script>
 	</head>
 	<body id="Main">
 		<p align="center">Quick Draw!</p><br>
@@ -38,118 +40,127 @@
     
     <script>
         $(document).ready(function() {
-
-        socket.on('spectatorState', function(msg)
-        {//Only handles error or lobby. Server handles the other game states
-            gameState = msg['gameState']
-            if (gameState == 0)
-            {
-                alert('Wrong Game Code');
-                return;
-            }
-            else if (gameState == 1) //Lobby
-            {
-                $('#content').html('Please wait for the game to start.');
-                return;
-            }
-        });
-        socket.on('playerState', function(msg)
-        {
-            console.log("playerState");
-            var gameCode = document.getElementsByName('room_code')[0].value;
-
-            console.log(msg['gameState']);
-            gameState = msg['gameState'];
+            $('#player').click(function (e) {
+                console.log("click");
+                if (isMobile == false) playerAction(e);           
+            });
+            $("#player").on("touchstart", function(e){
+                console.log("touch");
+                if (isMobile == true) playerAction(e);
+            });
+            $('#spectator').click(function (e) {
+                if (isMobile == false) spectatorAction(e)
+            });
+            $("#spectator").on("touchstart", function(e){
+                if (isMobile == true) spectatorAction(e);
+            });
             
-            if (gameState == 0 || gameState == 1)
+            //Make sure these functions/buttons are set first, then check for the join flag.
+            if(joinFlag)
             {
-                $.ajax({
-                    type: "POST",
-                    url: '/login',
-                    data: $('form').serialize(), // serializes the form's elements.
-                    success: function (data) {
-                        console.log(data);
-                        if (data['error']>0) 
-                            setRoomCode("");
-                        if (data['error'] == 1)
-                        {
-                            alert("Wrong Game Code");
-                            return;
-                        }
-                        else if (data['error'] == 2)
-                        {
-                            alert("The room is full!");
-                            return;
-                        }
-                        else if (data['error'] == 3)
-                        {
-                            alert('Please choose a different username');
-                            return;
-                        }
-                        else if (data['error'] == 4)
-                        {
-                            alert('Invalid form');
-                            return;
-                        }
-                        else if(data['error'] == 5)
-                        {
-                            alert('Game has started! Please join as spectator instead');
-                            return;
-                        }
-                        $('body').html(data);
-
-                    }
-                });
-            }
-        });
-        $('#player').click(function (e) {
-            console.log("click");
-            if (isMobile == false) playerAction(e);           
-        });
-        $("#player").on("touchstart", function(e){
-            console.log("touch");
-            if (isMobile == true) playerAction(e);
-        });
-        $('#spectator').click(function (e) {
-            if (isMobile == false) spectatorAction(e)
-        });
-        $("#spectator").on("touchstart", function(e){
-            if (isMobile == true) spectatorAction(e);
-        });
-        function playerAction(e)
-        {
-            e.stopPropagation();
-            e.preventDefault();
-            console.log("playerAction");
-            var name = document.getElementsByName('name')[0].value;
-            var gameCode = document.getElementsByName('room_code')[0].value;
-            if (name == "" || gameCode == "")
-            {
-                alert('Please fill out all fields');
+                console.log("Warning: Existing Join Script detected.");
                 return;
             }
-            setRoomCode(gameCode);
-            socket.emit('checkExistUser', {user: name, room_code: gameCode}); 
-        }
-        function spectatorAction(e)
-        {
-            e.stopPropagation();
-            e.preventDefault();
-            console.log("spectatorAction");
-            var gameCode = document.getElementsByName('room_code')[0].value;
-            setRoomCode(gameCode);
-
-            socket.emit('spectatorJoin', gameCode);
-        }
-        // Inject our CSRF token into our AJAX request.
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
-                }
-            }
-        })
     
+            joinFlag = true;
+            
+            function playerAction(e)
+            {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log("playerAction");
+                var name = document.getElementsByName('name')[0].value;
+                var gameCode = document.getElementsByName('room_code')[0].value;
+                if (name == "" || gameCode == "")
+                {
+                    alert('Please fill out all fields');
+                    return;
+                }
+                setRoomCode(gameCode);
+                socket.emit('checkExistUser', {user: name, room_code: gameCode}); 
+            }
+            function spectatorAction(e)
+            {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log("spectatorAction");
+                var gameCode = document.getElementsByName('room_code')[0].value;
+                setRoomCode(gameCode);
+    
+                socket.emit('spectatorJoin', gameCode);
+            }
+            // Inject our CSRF token into our AJAX request.
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                    }
+                }
+            })
+            
+            socket.on('spectatorState', function(msg)
+            {//Only handles error or lobby. Server handles the other game states
+                gameState = msg['gameState']
+                if (gameState == 0)
+                {
+                    alert('Wrong Game Code');
+                    return;
+                }
+                else if (gameState == 1) //Lobby
+                {
+                    $('#content').html('Please wait for the game to start.');
+                    return;
+                }
+            });
+            socket.on('playerState', function(msg)
+            {
+                console.log("playerState");
+                var gameCode = document.getElementsByName('room_code')[0].value;
+    
+                console.log(msg['gameState']);
+                gameState = msg['gameState'];
+                
+                if (gameState == 0 || gameState == 1)
+                {
+                    $.ajax({
+                        type: "POST",
+                        url: '/login',
+                        data: $('form').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                            //console.log(data);
+                            if (data['error']>0) 
+                                setRoomCode("");
+                            if (data['error'] == 1)
+                            {
+                                alert("Wrong Game Code");
+                                return;
+                            }
+                            else if (data['error'] == 2)
+                            {
+                                alert("The room is full!");
+                                return;
+                            }
+                            else if (data['error'] == 3)
+                            {
+                                alert('Please choose a different username');
+                                return;
+                            }
+                            else if (data['error'] == 4)
+                            {
+                                alert('Invalid form');
+                                return;
+                            }
+                            else if(data['error'] == 5)
+                            {
+                                alert('Game has started! Please join as spectator instead');
+                                return;
+                            }
+                            $('body').html(data);
+    
+                        }
+                    });
+                }
+            });
     });
         
     </script>

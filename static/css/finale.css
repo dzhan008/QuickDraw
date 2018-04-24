@@ -2,6 +2,7 @@
 {
     animation: popout 1s ease;
     -webkit-animation: popout 1s ease;
+    margin-top: 50%;
 }
 @keyframes popout
 {
@@ -25,3 +26,4 @@
     text-align: center;
     width: 100%;
 }
+

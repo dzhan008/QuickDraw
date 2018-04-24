@@ -6,13 +6,17 @@ import random
 
 #Main Page
 @flask_app.route('/')
-def home():
+def main():
     return render_template('index.html')
 
 @flask_app.route('/index', methods=['GET', 'POST'])
 def index():
     print "Returning Index"
     return render_template('index.html')
+
+@flask_app.route('/home', methods=['GET', 'POST'])
+def home():
+    return render_template('home.html')
 
 #Join Game Form Page
 @flask_app.route('/join', methods=['GET', 'POST'])

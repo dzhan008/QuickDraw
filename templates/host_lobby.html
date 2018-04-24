@@ -27,6 +27,7 @@
          }
         $(document).ready(function()
         {
+
             //console.log('+{{code}});
             var codeString = '{{code}}';
             socket.emit('createGame', codeString);
@@ -42,100 +43,107 @@
             $( "#Disconnect" ).click(function() {
                 disconnect();
             });
-        });
-        
-        function stopMusic()
-        {
-            lobbyAudio.pause();
-            lobbyAudio.currentTime = 0.0;
-        }
-        
-        function startGame()
-        {
-            stopMusic();
-            var code = '{{code}}'
-            socket.emit('startGame', code);
-            $.ajax({
-                type:'POST',
-                url:'/host_showdown',
-                data: JSON.stringify( {'roomCode' : code }),
-                contentType: 'application/json;charset=UTF-8',
-                success: function(data)
-                {
-                    //Do an error check if there isn't enough players
-                    $('body').html(data);
-                    $('#roomCode').html(code);
-                    $('body').removeClass('lobby');
-                    $('body').addClass('home');
-                }
-            });
-        }
-        function disconnect()
-        {
-            stopMusic();
-            $.ajax({
-                type:'POST',
-                url:'/index',
-                success: function(data)
-                {
-                    socket.emit('disconnectGame', '{{code}}');
-                    $('body').html(data);
-                    $('body').removeClass('lobby');
-                    $('body').addClass('home');   
-                }
-            });
-        }
-        socket.on('serverMsg', function(msg)
-        {
-            console.log(msg);
-        });
-        socket.on('playerJoin', function(msg)
-        {
-            var playerList = document.getElementById('playerList');
-            var col = document.createElement('div');
-            col.setAttribute('id', msg['username']);
-            col.className = 'col-md-1 col-md-1-5 text-center ';
-            var prevMarginTop = $('#playerList').children().last().hasClass('marginTOP');
-            if (!prevMarginTop)
-                col.className += 'marginTOP';
-            var img = document.createElement('img');
-            img.src = "static/images/Idle" + msg['charIndex'] + '.png';
-            img.className = 'charLobby';
-            col.appendChild(img);
-            var username = document.createTextNode(msg['username']);
-            $(username).addClass('name-tag');
-            col.appendChild(username);
-            col.style.cssText = "left:-1500px";
-            playerList.appendChild(col);
-            $(col).animate({'left': 0}, 1000);
-            playClip(msg['charIndex']);
-            //$(playerList).hide().fadeIn(1000);
-            // var ul = document.getElementById('playerList');
-            // var li = document.createElement("li");
-            // li.setAttribute('id', msg['username']);
-            // li.appendChild(document.createTextNode(msg['username']));
-            // ul.appendChild(li);
-        });
-        socket.on('playerLeave', function(msg)
-        {
-            $('#' + msg).animate({'left':'-1500px'}, 1000);
-            var hasMargin = $('#' + msg).hasClass("marginTOP");
-            var nextSiblings = $('#' + msg).nextAll();
-            if (nextSiblings.length != 0)
+            
+            if(lobbyFlag)
             {
-                var i = 0 ;
-                while (i < nextSiblings.length)
-                {
-                    if (hasMargin)
-                        $(nextSiblings[i]).addClass('marginTOP');
-                    else
-                        $(nextSiblings[i]).removeClass('marginTOP');                   
-                    hasMargin = !hasMargin;
-                    i++;
-                }
+                console.log("Warning: Existing host lobby script found.");
+                //Set a new gameCode since we're making a new game.
+                codeString = '{{code}}';
+                socket.emit('createGame', codeString);
+                return;
+            }
+            lobbyFlag = true;
+        
+            function stopMusic()
+            {
+                lobbyAudio.pause();
+                lobbyAudio.currentTime = 0.0;
             }
             
-            $('#' + msg).remove();
+            function startGame()
+            {
+                stopMusic();
+                var code = '{{code}}'
+                socket.emit('startGame', code);
+                $.ajax({
+                    type:'POST',
+                    url:'/host_showdown',
+                    data: JSON.stringify( {'roomCode' : code }),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function(data)
+                    {
+                        //Do an error check if there isn't enough players
+                        $('body').html(data);
+                        $('#roomCode').html(code);
+                        $('body').removeClass('lobby');
+                        $('body').addClass('home');
+                    }
+                });
+            }
+            function disconnect()
+            {
+                stopMusic();
+                $.ajax({
+                    type:'POST',
+                    url:'/home',
+                    success: function(data)
+                    {
+                        socket.emit('disconnectGame', '{{code}}');
+                        $('body').html(data);
+                        $('body').removeClass('lobby');
+                        $('body').addClass('home');   
+                    }
+                });
+            }
+       
+            socket.on('playerJoin', function(msg)
+            {
+                var playerList = document.getElementById('playerList');
+                var col = document.createElement('div');
+                col.setAttribute('id', msg['username']);
+                col.className = 'col-md-1 col-md-1-5 text-center ';
+                var prevMarginTop = $('#playerList').children().last().hasClass('marginTOP');
+                if (!prevMarginTop)
+                    col.className += 'marginTOP';
+                var img = document.createElement('img');
+                img.src = "static/images/Idle" + msg['charIndex'] + '.png';
+                img.className = 'charLobby';
+                col.appendChild(img);
+                var username = document.createTextNode(msg['username']);
+                $(username).addClass('name-tag');
+                col.appendChild(username);
+                col.style.cssText = "left:-1500px";
+                playerList.appendChild(col);
+                $(col).animate({'left': 0}, 1000);
+                playClip(msg['charIndex']);
+                //$(playerList).hide().fadeIn(1000);
+                // var ul = document.getElementById('playerList');
+                // var li = document.createElement("li");
+                // li.setAttribute('id', msg['username']);
+                // li.appendChild(document.createTextNode(msg['username']));
+                // ul.appendChild(li);
+            });
+            socket.on('playerLeave', function(msg)
+            {
+                $('#' + msg).animate({'left':'-1500px'}, 1000);
+                var hasMargin = $('#' + msg).hasClass("marginTOP");
+                var nextSiblings = $('#' + msg).nextAll();
+                if (nextSiblings.length != 0)
+                {
+                    var i = 0 ;
+                    while (i < nextSiblings.length)
+                    {
+                        if (hasMargin)
+                            $(nextSiblings[i]).addClass('marginTOP');
+                        else
+                            $(nextSiblings[i]).removeClass('marginTOP');                   
+                        hasMargin = !hasMargin;
+                        i++;
+                    }
+                }
+                
+                $('#' + msg).remove();
+            });
         });
     </script>
 </html>

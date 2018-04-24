@@ -23,6 +23,9 @@
             isMobile = true;
             }
             var socket = 0;
+            var homeFlag = false;
+            var lobbyFlag = false;
+            var joinFlag = false;
             var masterRoomCode = "";
             console.log("isMobile" + isMobile);
             function setRoomCode(code)
@@ -33,7 +36,25 @@
             $(document).ready(function()
             {
                 if (socket == 0)
+                {
                     socket = io.connect('http://' + document.domain + ':' + location.port);
+                    console.log('Connecting...');
+                    
+                    $.ajax({
+                        type:'POST',
+                        url: '/home',
+                        success: function(data)
+                        {
+                            $('body').html(data);
+                        }
+                    });
+                    
+                }
+                else
+                {
+                    console.log('Socket already connected. Returning...');
+                    return;
+                }
                 socket.on('serverMsg', function(msg)
                 {
                 if (msg == 'return')
@@ -41,10 +62,9 @@
                     $.ajax(
                     {
                         type:'POST',
-                        url: '/index',
+                        url: '/home',
                         success: function(data)
                         {
-                            console.log(data);
                             $('body').html(data);
                         }
                     });
@@ -59,7 +79,6 @@
                     url: '/client_showdown',
                     success: function(data)
                     {
-                        console.log(data);
                         $('#content').html(data);
                     }
                 });
@@ -76,7 +95,7 @@
                         data: JSON.stringify( {'roomCode' : masterRoomCode }),
                         contentType: 'application/json;charset=UTF-8',
                         success: function (data) {
-                            console.log(data)  // display the returned data in the console.
+                            //console.log(data)  // display the returned data in the console.
                             $('#content').html(data);
                         }
                     });
@@ -92,7 +111,7 @@
                     //data: JSON.stringify( {'num' : '0', 'hi' : 'baka'} ) , //NEW
                     //contentType: 'application/json;charset=UTF-8', //NEW
                     success: function (data) {
-                        console.log(data)  // display the returned data in the console.
+                        //console.log(data)  // display the returned data in the console.
                         $('#content').html(data);
                         $('#prompt').html(prompt);
                     }
@@ -119,67 +138,7 @@
     </head>
     
     <body class="home">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-6" style="margin-bottom:5px;">
-                    <button type="button" class="btn btn-block btn-success" id="CreateGameButt">Create Game</button>
-                </div>
-                <div class="col-sm-6" style="margin-bottom:5px;">
-                    <button type="button" class="btn btn-block btn-primary" id="JoinGameButt">Join Game</button>
-                </div>
-            </div>
-        </div>
+    
     </body>
-    <script>
-        $(document).ready(function()
-        {
-            $("#JoinGameButt").on("touchstart", function(){
-                joinGame();
-            });
-            $( "#JoinGameButt" ).click(function() {
-                joinGame();
-            });
-            $("#CreateGameButt").on("touchstart", function(){
-                createGame();
-            });
-            $( "#CreateGameButt" ).click(function() {
-                createGame();
-            });
 
-        });
-
-        function createGame()
-        {
-            console.log("createGame");
-            
-            $.ajax({
-                type:'POST',
-                url: '/create',
-                success: function(data)
-                {
-                    console.log(data);
-                    $('body').removeClass('home');
-                    $('body').addClass('lobby');
-                    $('body').html(data);
-                }
-            });
-        }
-
-        function joinGame()
-        {
-            console.log("Join Game Screen");
-            var url = "{{ url_for('join') }}";
-            $.ajax({
-                type:'POST',
-                url: '/join',
-                success: function(data)
-                {
-                    console.log(data);
-                    $('body').html(data);
-                }
-            });
-        }
-
-
-    </script>
 </html>

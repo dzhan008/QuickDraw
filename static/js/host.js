@@ -40,11 +40,12 @@ $(document).ready(function(){
     {
         console.log('Warning: Duplicate host file detected.');
         hostRoomCode = $('#roomCode').html();
+        console.log(hostRoomCode);
         return;
     }
     
     hostRoomCode = $('#roomCode').html();
-        
+    console.log(hostRoomCode);
     //Grabs random time from server and starts timer
     socket.on('startTimer', function(msg){
         console.log(msg);
@@ -126,7 +127,7 @@ $(document).ready(function(){
                 type: "POST",
                 url: '/draw',
                 success: function (data) {
-                    console.log(data)  // display the returned data in the console.
+                    //console.log(data)  // display the returned data in the console.
                     $('body').html(data);
                 }
             });
@@ -241,7 +242,7 @@ function countdown()
                 data: JSON.stringify( {'roomCode' : $('#roomCode').html() }),
                 contentType: 'application/json;charset=UTF-8',
                 success: function (data) {
-                    console.log(data)  // display the returned data in the console.
+                    //console.log(data)  // display the returned data in the console.
                     $('#hostCanvas').html(data);
                 }
             });
@@ -365,15 +366,7 @@ function countdown()
         }
         else if(timerType == phases.bootPhase)
         {
-            $.ajax({
-            type:'POST',
-            url:'/index',
-            success: function(data)
-            {
-                socket.emit('disconnectGame', hostRoomCode);
-                $('body').html(data);
-            }
-            });
+            socket.emit('disconnectGame', hostRoomCode);
             timerType = phases.prePhase;
         }
     }
