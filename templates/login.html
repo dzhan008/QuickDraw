@@ -16,7 +16,7 @@
 	</head>
 	<body>
         <h1 class="text-center" id="username"> {{ user }}</h1>
-        <div id="content">
+        <div id="content" style="margin: 0 auto; text-align: center">
             <h1>Welcome Partner!</h1>
             <h1>Please wait for the game to start.</h1>
 		    <h1> Room Code: {{ room_code }}</h1>
@@ -29,6 +29,7 @@
 			//Tell the host client to update the list
 			var char = document.createElement('img');
 			char.src = "/static/images/Idle" + '{{char_select}}' + '.png';
+			char.style.width = "30%";
 			$("#content").append(char);
 			socket.emit('playerJoin', {user: '{{user}}', char_select: '{{char_select}}', room_code: '{{room_code}}'});
 		});

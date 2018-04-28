@@ -14,11 +14,16 @@ var count = 0;
 $( document ).ready(function() {
     console.log('Making canvas!');
 	canvasDiv = document.getElementById('canvasDiv');
-	canvas = document.createElement('canvas');
-	canvas.setAttribute('width', canvasWidth);
-	canvas.setAttribute('height', canvasHeight);
-	canvas.setAttribute('id', 'canvas');
-	canvasDiv.appendChild(canvas);
+	if ($("#canvas").length == 0)
+	{
+		console.log("canvas doesn't exist");
+		canvas = document.createElement('canvas');
+		canvas.setAttribute('width', canvasWidth);
+		canvas.setAttribute('height', canvasHeight);
+		canvas.setAttribute('id', 'canvas');
+		canvas.style.background = 'white';
+		canvasDiv.appendChild(canvas);
+	}
 	context = canvas.getContext("2d");
 	context.strokeStyle = "#cc99b5";
 	context.lineJoin = "round";
