@@ -26,6 +26,8 @@
             var homeFlag = false;
             var lobbyFlag = false;
             var joinFlag = false;
+            var clientFlag = false;
+            var loginFlag = false;
             var masterRoomCode = "";
             console.log("isMobile" + isMobile);
             function setRoomCode(code)
@@ -85,7 +87,12 @@
                 });
 
                 socket.on('spectate_match', function(){
-                $('#content').html('Currently spectating match...');
+                    $('#content').html('<span class=\'centerContent\'>Currently spectating match...</span>');
+                });
+                
+                //TODO: Put a socket event to clear voting screen 
+                socket.on('endVoting', function() {
+                    $('#content').html('<span class=\'centerContent\'>Waiting for next game...</span>');
                 });
 
                 socket.on('votingPhase', function() {
@@ -119,10 +126,10 @@
                 });
             });
             
-            function playClip(clipName)
+            function playSFX(clipName)
             {
                 //Create an audio object/promise and play it
-                var audio = new Audio('static/audio/' + clipName + '.mp3');
+                var audio = new Audio('static/audio/sfx/' + clipName + '.mp3');
                 var playPromise = audio.play();
     
                 if(playPromise !== undefined) {
@@ -132,11 +139,27 @@
                         
                     });
                 }
+                return audio;
             }
             
+            function playMusic(clipName)
+            {
+                //Create an audio object/promise and play it
+                var audio = new Audio('static/audio/music/' + clipName + '.mp3');
+                var playPromise = audio.play();
+    
+                if(playPromise !== undefined) {
+                    playPromise.then(function() {
+                        
+                    }).catch(function(error) {
+                        
+                    });
+                }
+                return audio; 
+            }
         </script>
     </head>
-    
+
     <body class="home">
     
     </body>

@@ -3,6 +3,7 @@
         <title>Login Quick Draw</title>
     </head>
     <body>
+
         <h1> Room Code: <p style="display:inline;" id="roomCode">{{ code }}</p></h1>
         <button class="btn btn-block btn-success" style="width: 25%;" id="StartGame">Start Game</button>
         <button class="btn btn-block btn-primary" style="width: 25%;" id="Disconnect">Disconnect</button>
@@ -15,7 +16,7 @@
     </body>
     <script>
          //Create an audio object/promise and play it
-         var lobbyAudio = new Audio('static/audio/saloon_break_time.mp3');
+         var lobbyAudio = new Audio('static/audio/music/lobby.mp3');
          var playPromise = lobbyAudio.play();
          
          if(playPromise !== undefined) {
@@ -27,10 +28,10 @@
          }
         $(document).ready(function()
         {
-
             //console.log('+{{code}});
             var codeString = '{{code}}';
-            socket.emit('createGame', codeString);
+            var videoName = 'test.mp4';
+            
             $("#StartGame").on("touchstart", function(){
                 startGame();
             });
@@ -53,7 +54,7 @@
                 return;
             }
             lobbyFlag = true;
-        
+            socket.emit('createGame', codeString);
             function stopMusic()
             {
                 lobbyAudio.pause();
@@ -63,18 +64,27 @@
             function startGame()
             {
                 stopMusic();
-                var code = '{{code}}'
-                socket.emit('startGame', code);
+                $('body').html('<video id=\"tutorial_video\" autoplay=\"autoplay\"><source src=\"static/video/' + videoName + '\" type=\"video/mp4\" /></video>');
+                socket.emit('tutorialStart', codeString);
+                $('#tutorial_video').on('ended', function(){
+                    setupGame();
+                });
+
+            }
+            
+            function setupGame()
+            {
+                socket.emit('startGame', codeString);
                 $.ajax({
                     type:'POST',
                     url:'/host_showdown',
-                    data: JSON.stringify( {'roomCode' : code }),
+                    data: JSON.stringify( {'roomCode' : codeString }),
                     contentType: 'application/json;charset=UTF-8',
                     success: function(data)
                     {
                         //Do an error check if there isn't enough players
                         $('body').html(data);
-                        $('#roomCode').html(code);
+                        $('#roomCode').html(codeString);
                         $('body').removeClass('lobby');
                         $('body').addClass('home');
                     }
@@ -115,7 +125,7 @@
                 col.style.cssText = "left:-1500px";
                 playerList.appendChild(col);
                 $(col).animate({'left': 0}, 1000);
-                playClip(msg['charIndex']);
+                playSFX(msg['charIndex']);
                 //$(playerList).hide().fadeIn(1000);
                 // var ul = document.getElementById('playerList');
                 // var li = document.createElement("li");
@@ -144,6 +154,12 @@
                 
                 $('#' + msg).remove();
             });
+            
+            socket.on('tutorialSkip', function(){
+                console.log('Skipping tutorial!');
+                setupGame();
+            });
+            
         });
     </script>
 </html>

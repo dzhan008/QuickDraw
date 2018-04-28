@@ -19,9 +19,9 @@ var timerID;
 var hostRoomCode;
 var suspenseTime = 0;
 var MAX_COUNTDOWN_TIME = 3; //3
-var MAX_DRAWING_TIME = 15; //10
+var MAX_DRAWING_TIME = 10; //10
 var MAX_WAIT_TIME = 2; //2
-var MAX_VOTING_TIME = 10;  //15
+var MAX_VOTING_TIME = 15;  //15
 var MAX_DISPLAY_WINNER_TIME = 3; //3
 var MAX_DISPLAY_SCOREBOARD_TIME = 5; //5
 var MAX_TRANSITION_TIME = 1;
@@ -128,14 +128,12 @@ $(document).ready(function(){
         {
             //modelOneIndex/modelTwoIndex are from the html file, defined because we need to get the indices from flask first
             $('#comp-one-model').attr('src', 'static/images/Stun' + modelOneIndex + '.png' );
-            $('#comp-one-model').css('height', '123px');
             $('#comp-two-model').attr('src', 'static/images/Draw' + modelTwoIndex + '.png');
         }
         else(stunnedPlayer == "two")
         {
             $('#comp-one-model').attr('src', 'static/images/Draw' + modelOneIndex + '.png');
             $('#comp-two-model').attr('src', 'static/images/Stun' + modelTwoIndex + '.png' );
-            $('#comp-two-model').css('height', '123px');
         }
     });
     

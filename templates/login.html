@@ -20,10 +20,19 @@
             <h1>Welcome Partner!</h1>
             <h1>Please wait for the game to start.</h1>
 		    <h1> Room Code: {{ room_code }}</h1>
+            <button type="button" class="btn btn-block btn-success" id="skipBtn">Skip Tutorial</button>
         </div>
 	</body>
 	<script>
 		$(document).ready(function(){
+            $('#skipBtn').hide();
+            $('#skipBtn').click(function (e) {
+                skipTutorial();  
+            });
+            $("#skipBtn").on("touchstart", function(e){
+                skipTutorial();
+            });
+            
 			//Send a message to the server to let it know 
 			//that a user joined. So that the server can
 			//Tell the host client to update the list
@@ -32,6 +41,21 @@
 			char.style.width = "30%";
 			$("#content").append(char);
 			socket.emit('playerJoin', {user: '{{user}}', char_select: '{{char_select}}', room_code: '{{room_code}}'});
+            if(loginFlag)
+            {
+                console.log("Warning: Existing client join script found.");
+                return;
+            }
+            loginFlag = true;
+            
+            socket.on('showSkipButton', function(){
+                $('#skipBtn').show();
+            });
+            
+            function skipTutorial()
+            {
+                socket.emit('tutorialSkip', '{{ room_code }}');    
+            }
 		});
 		
 	</script>

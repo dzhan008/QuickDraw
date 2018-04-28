@@ -47,8 +47,6 @@ def checkExistUser(formData):
             else:
                 emit('spectate_match')
 
-
-
 @socketio.on('spectatorJoin')
 def spectatorJoin(gameCode):
     print 'Spectator Join'
@@ -86,3 +84,13 @@ def playerJoin(message):
 @socketio.on('playerLeave')
 def playerLeave(message):
     flask_app.config['LobbyManager'].removePlayer(request.sid)
+
+@socketio.on('tutorialStart')
+def tutorialStart(gameCode):
+    game = flask_app.config['LobbyManager'].getGameManager(gameCode)
+    emit('showSkipButton', room=game.activePlayers[0].sid)
+
+@socketio.on('tutorialSkip')
+def tutorialSkip(gameCode):
+    game = flask_app.config['LobbyManager'].getGameManager(gameCode)
+    emit('tutorialSkip', room=game.host)
