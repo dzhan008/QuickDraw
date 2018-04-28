@@ -114,7 +114,8 @@ img
     height: auto; 
 }
 
-.numberCircle {
+.numberCircle 
+{
     border-radius: 50%;
     behavior: url(PIE.htc); /* remove if you don't care about IE8 */
 
@@ -128,4 +129,14 @@ img
     text-align: center;
     
     font: 32px Arial, sans-serif;
+}
+
+.centerContent
+{
+    position: absolute;
+    text-align: center;
+    left: 0;
+    right: 0;
+    top: auto;
+    
 }

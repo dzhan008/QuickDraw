@@ -5,27 +5,33 @@ var phases = Object.freeze(
     prePhase: 0,
     suspensePhase: 1,
     drawingPhase: 2,
-    votingPhase: 3,
-    displayWinnerPhase: 4,
-    scoreboardPhase: 5,
-    transitionPhase: 6,
-    loadingPhase: 7,
-    endPhase: 8
+    waitingPhase: 3,
+    votingPhase: 4,
+    displayWinnerPhase: 5,
+    scoreboardPhase: 6,
+    transitionPhase: 7,
+    loadingPhase: 8,
+    endPhase: 9
 });
 var nextPhase = phases.prePhase;
 var currentPhase = phases.prePhase;
 var timerID;
 var hostRoomCode;
 var suspenseTime = 0;
-var MAX_COUNTDOWN_TIME = 3;
-var MAX_DRAWING_TIME = 10; //10
-var MAX_VOTING_TIME = 15;  //15
+var MAX_COUNTDOWN_TIME = 3; //3
+var MAX_DRAWING_TIME = 15; //10
+var MAX_WAIT_TIME = 2; //2
+var MAX_VOTING_TIME = 10;  //15
 var MAX_DISPLAY_WINNER_TIME = 3; //3
 var MAX_DISPLAY_SCOREBOARD_TIME = 5; //5
 var MAX_TRANSITION_TIME = 1;
 var MAX_CREDITS_TIME = 30; //30
 
-var suspenseAudio = new Audio('static/audio/showdown.mp3');
+var stunnedPlayer = 'one';
+
+var suspenseAudio = new Audio('static/audio/music/showdown.mp3');
+var drawingAudio = new Audio('static/audio/music/drawing2.mp3');
+var votingAudio = new Audio('static/audio/music/voting.mp3');
 
 
 //Old clientside code for randomly setting a time, not sure if better to do it clientside than serverside
@@ -67,7 +73,7 @@ $(document).ready(function(){
             var competitor = '#comp-' + msg.data + '-ready';
             console.log(competitor);
             $(competitor).removeClass('notReady').addClass('ready');
-            playClip('revolver_click');
+            playSFX('sfx_revolver_cock');
         }
     });
     
@@ -82,18 +88,66 @@ $(document).ready(function(){
     //Stops timer due to false start on one of the client
     socket.on('falseStart', function(){
         clearTimeout(timerID);
-        $('#top-text').html('Timer stopped due to false start.');
-        $(timerTag).empty();
-        $(timerTag).hide();
-        $('#press-screen').show();
-        $('#hostCanvas').empty();
-        currentPhase = phases.prePhase;
-        $('#comp-one-ready').removeClass('ready').addClass('notReady');
-        $('#comp-two-ready').removeClass('ready').addClass('notReady');
-        $('#comp-one-ready').css('opacity','1');
-        $('#comp-two-ready').css('opacity', '1');
-        suspenseAudio.pause();
-        suspenseAudio.currentTime = 0;
+        
+        if(currentPhase == phases.suspensePhase)
+        {
+            setTimer(MAX_DRAWING_TIME, phases.drawingPhase);
+            setupDrawPhase();
+            //Play music
+            var playPromise = drawingAudio.play();
+            
+            if(playPromise !== undefined) {
+                playPromise.then(function() {
+                    
+                }).catch(function(error) {
+                    
+                });
+            } 
+            suspenseAudio.pause();
+            suspenseAudio.currentTime = 0;
+        }
+        else if(currentPhase == phases.prePhase)
+        {
+            $('#top-text').html('Timer stopped due to false start.');
+            currentPhase = phases.prePhase;
+            $(timerTag).empty();
+            $(timerTag).hide();
+            $('#press-screen').show();
+            $('#hostCanvas').empty();
+            $('#comp-one-ready').removeClass('ready').addClass('notReady');
+            $('#comp-two-ready').removeClass('ready').addClass('notReady');
+            $('#comp-one-ready').css('opacity','1');
+            $('#comp-two-ready').css('opacity', '1');
+        }
+
+    });
+    
+    socket.on('displayStun', function(player){
+        stunnedPlayer = player.data;
+        if(stunnedPlayer == "one")
+        {
+            //modelOneIndex/modelTwoIndex are from the html file, defined because we need to get the indices from flask first
+            $('#comp-one-model').attr('src', 'static/images/Stun' + modelOneIndex + '.png' );
+            $('#comp-one-model').css('height', '123px');
+            $('#comp-two-model').attr('src', 'static/images/Draw' + modelTwoIndex + '.png');
+        }
+        else(stunnedPlayer == "two")
+        {
+            $('#comp-one-model').attr('src', 'static/images/Draw' + modelOneIndex + '.png');
+            $('#comp-two-model').attr('src', 'static/images/Stun' + modelTwoIndex + '.png' );
+            $('#comp-two-model').css('height', '123px');
+        }
+    });
+    
+    socket.on('displayUnstun', function(){
+        if(stunnedPlayer == "one")
+        {
+            $('#comp-one-model').attr('src', 'static/images/Draw' + modelOneIndex + '.png' );   
+        }
+        else(stunnedPlayer == "two")
+        {
+            $('#comp-two-model').attr('src', 'static/images/Draw' + modelTwoIndex + '.png' );   
+        }
     });
     
     socket.on('displayRoundWinner', function(msg){
@@ -166,7 +220,7 @@ function displayBulletHoles(context)
                 var randomX=Math.min(canvasWidth-80,Math.random()*canvasWidth);
                 var randomY=Math.min(canvasHeight-100,Math.random()*canvasHeight);
                 context.drawImage(base_image, randomX, randomY);                
-                playClip('gunshot_magnum');
+                playSFX('sfx_revolver_shot');
                 if (--i) myLoop(i);
             }, 400)
         })(3);
@@ -191,6 +245,27 @@ function unfade()
     });
 }
 
+function setupDrawPhase()
+{
+    //Start the drawing phase for the clients, and also grab the main real time canvases of both clients
+    socket.emit('startDrawing', hostRoomCode);
+    $.ajax({
+        type: "POST",
+        url: '/host_canvas',
+        data: JSON.stringify( {'roomCode' : $('#roomCode').html() }),
+        contentType: 'application/json;charset=UTF-8',
+        success: function (data) {
+            //console.log(data)  // display the returned data in the console.
+            $('#hostCanvas').html(data);
+        }
+    });
+    
+    console.log('Setting models...');
+    //Revert the models scales and change their images
+    $('#comp-one-model').css('transform', 'scaleX(-1)');
+    $('#comp-two-model').css('transform', 'scaleX(1)');
+}
+
 //Set a new timer with the provided time and the phase to attach the timer to.
 function setTimer(time, phase)
 {
@@ -203,16 +278,33 @@ function setTimer(time, phase)
 function countdown() 
 {
     //Change the timer display
-    if(currentPhase == phases.prePhase || currentPhase == phases.drawingPhase || currentPhase == phases.votingPhase)
+    if(currentPhase == phases.prePhase || currentPhase == phases.drawingPhase || currentPhase == phases.votingPhase && timeLeft != 0)
     {
         $(timerTag).html(timeLeft);    
     }
+    
+    if(currentPhase == phases.prePhase)
+    {
+        if(timeLeft == 3 || timeLeft == 2 || timeLeft == 1)
+        {
+            playSFX("sfx_revolver_spin");
+        }
+    }
+    else if(currentPhase == phases.drawingPhase)
+    {
+        if(timeLeft == 3 || timeLeft == 2 || timeLeft == 1)
+        {
+            playSFX("sfx_countdown");
+        }
+    }
+    
     if(timeLeft == 0)
     {
         //Turns off timer
         clearTimeout(timerID);
         if(currentPhase == phases.prePhase)
         {
+            socket.emit('showdown', hostRoomCode);
             //Change the scale of the models to make them turn their backs
             $('#comp-one-model').css('transform', 'scaleX(1)');
             $('#comp-two-model').css('transform', 'scaleX(-1)');
@@ -240,48 +332,48 @@ function countdown()
         else if(currentPhase == phases.suspensePhase)
         {
             //Create an audio object/promise and play it
-            var audio = new Audio('static/audio/Cow.mp3');
-            var playPromise = audio.play();
-
-            if(playPromise !== undefined) {
-                playPromise.then(function() {
-                    
-                }).catch(function(error) {
-                    
-                });
-            }
-            //Start the drawing phase for the clients, and also grab the main real time canvases of both clients
-            socket.emit('startDrawing', hostRoomCode);
-            $.ajax({
-                type: "POST",
-                url: '/host_canvas',
-                data: JSON.stringify( {'roomCode' : $('#roomCode').html() }),
-                contentType: 'application/json;charset=UTF-8',
-                success: function (data) {
-                    //console.log(data)  // display the returned data in the console.
-                    $('#hostCanvas').html(data);
-                }
+            //var suspenseSound = playSFX('sfx_cow');
+            
+            //Create an audio object/promise and play it
+            var suspenseSound = playSFX('sfx_cow');
+            
+            suspenseSound.addEventListener("ended", function() {
+                var playPromise = drawingAudio.play();
+    
+                if(playPromise !== undefined) {
+                    playPromise.then(function() {
+                        
+                    }).catch(function(error) {
+                        
+                    });
+                }  
+                suspenseAudio.pause();
+                suspenseAudio.currentTime = 0;
             });
             
-            console.log('Setting models...');
-            //modelOneIndex/modelTwoIndex are from the html file, defined because we need to get the indices from flask first
-            $('#comp-one-model').attr('src', 'static/images/Draw' + modelOneIndex + '.png' );
-            $('#comp-two-model').attr('src', 'static/images/Draw' + modelTwoIndex + '.png');
-            
-            //Revert the models scales and change their images
-            $('#comp-one-model').css('transform', 'scaleX(-1)');
-            $('#comp-two-model').css('transform', 'scaleX(1)');
+            setupDrawPhase();
             
             //Changes phases
             setTimer(MAX_DRAWING_TIME, phases.drawingPhase);
         } 
         else if(currentPhase == phases.drawingPhase)
         {
-            $('#top-text').html('Vote for the best drawing!');
+            playSFX("sfx_countdown_long2");
+            drawingAudio.pause();
+            drawingAudio.currentTime = 0;
+            
+            $('#top-text').html('Finished!');
             socket.emit('stopDrawing');
+            
+            //Set up timer for the voting phase
+            setTimer(MAX_WAIT_TIME, phases.waitingPhase);
+        }
+        else if(currentPhase == phases.waitingPhase)
+        {
+            $('#top-text').html('Vote for the best drawing!');
             //Starts the voting phase for the clients.
             socket.emit('startVoting', hostRoomCode);
-            
+            votingAudio = playMusic('voting');
             //Set up timer for the voting phase
             setTimer(MAX_VOTING_TIME, phases.votingPhase);
             
@@ -298,8 +390,8 @@ function countdown()
         {
             socket.emit('checkNextState', hostRoomCode);
             setTimer(MAX_TRANSITION_TIME, phases.transitionPhase);
-            suspenseAudio.pause();
-            suspenseAudio.currentTime = 0;
+            votingAudio.pause();
+            votingAudio.currentTime = 0;
         }
         else if(currentPhase == phases.scoreboardPhase)
         {

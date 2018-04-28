@@ -2,6 +2,7 @@ from flask import request, session
 from flask_socketio import send, emit
 from .. import flask_app, socketio
 from ..classes import helper
+import sys
 
 competitors = flask_app.config['competitors']
 spectators = flask_app.config['spectators']
@@ -10,6 +11,8 @@ lobbyManager = flask_app.config['LobbyManager']
 @socketio.on('setSpectator')
 def setSpectator():
     spectators.append(request.sid)
+
+#Prephase Events
 
 @socketio.on('ready')
 def ready(masterRoomCode):
@@ -28,10 +31,21 @@ def ready(masterRoomCode):
             players[game.competitors[1]].ready = True
         emit('displayReady', {'data' : playerReady}, room=game.host)
         #If both players have readied
-        if players[game.competitors[0]].ready == True or players[game.competitors[1]].ready == True:
+        if players[game.competitors[0]].ready == True and players[game.competitors[1]].ready == True and game.showdownStarted == False:
             x = helper.generateSuspenseTime()
-            game.state = 3
+            players[game.competitors[0]].ready = False
+            players[game.competitors[1]].ready = False
+            game.showdownStarted = True
+            #Create a prompt beforehand in case of false start
+            game.currentPrompt = helper.generatePrompt()
             emit('startTimer', {'data': x}, room=game.host)
+            print 'Player 1 Ready State: ' + str(players[game.competitors[0]].ready)
+            print 'Player 2 Ready State: ' + str(players[game.competitors[1]].ready)
+            sys.stdout.flush()
+        else:
+            print 'Player 1 Ready State: ' + str(players[game.competitors[0]].ready)
+            print 'Player 2 Ready State: ' + str(players[game.competitors[1]].ready)
+            sys.stdout.flush()
 
 @socketio.on('unready')
 def unready(masterRoomCode):
@@ -39,13 +53,6 @@ def unready(masterRoomCode):
     players = game.activePlayers
     competitorSIDs = game.getCompetitorSIDs()
     playerUnready = ''
-    #Player let go early!
-    if game.state == 3:
-        helper.tellGroup('falseStart', competitors)
-        emit('falseStart', room=game.host)
-        game.state = 2
-        #Handle fouls here
-        game.showdownStarted = False
 
     #Check which player unreadied to display to host
     if request.sid == competitorSIDs[0]:
@@ -54,17 +61,40 @@ def unready(masterRoomCode):
     elif request.sid == competitorSIDs[1]:
         players[game.competitors[1]].ready = False
         playerUnready = 'two'
-    if game.state == 2:
+
+    #This is a false start, therefore we stun the player.
+    #We also immediately start the drawing phase.
+    if game.state == 2 and game.showdownStarted == True:
+        emit('falseStart', room=game.host)
+        game.showdownStarted = False
+        return
+    elif game.state == 2:
         emit('displayUnready', {'data' : playerUnready}, room=game.host)
-    if game.state == 4:
+        return
+    elif game.state == 3:
+        emit('stun', room=request.sid)
+        emit('displayStun', {'data' : playerUnready}, room=game.host)
+        if request.sid == competitorSIDs[0]:
+            emit('drawingPhase', {'data' : game.currentPrompt}, room=competitorSIDs[1]);
+        else:
+            emit('drawingPhase', {'data' : game.currentPrompt}, room=competitorSIDs[0]);
+        game.state = 4
+        game.showdownStarted = False
+        emit('falseStart', room=game.host)
+        return
+    elif game.state == 4:
         emit('drawingPhase', {'data' : game.currentPrompt}, room=request.sid);
 
-#Starting Phase Events
+@socketio.on('showdown')
+def showdown(masterRoomCode):
+    game = lobbyManager.getGameManager(masterRoomCode)
+    game.state = 3
+
+#Drawing Phase Events
 
 @socketio.on('startDrawing')
 def startDrawing(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
-    game.currentPrompt = helper.generatePrompt()
     game.state = 4
     socketio.emit('displayPrompt', {'data' : game.currentPrompt}, room=game.host)
 
@@ -76,6 +106,14 @@ def displayDrawing(json):
         emit('player1Data', json, room=game.host)
     else:
         emit('player2Data', json, room=game.host)
+
+@socketio.on('unstun')
+def unstun(masterRoomcode):
+    game = lobbyManager.getGameManager(masterRoomcode)
+    print 'Unstunning!'
+    sys.stdout.flush()
+    emit('drawingPhase', {'data' : game.currentPrompt}, room=request.sid)
+    emit('displayUnstun', room=game.host)
 
 #Voting Phase Events
 
@@ -101,6 +139,7 @@ def choiceTwo(masterRoomCode):
 @socketio.on('calcRoundWinner')
 def calcRoundWinner(masterRoomCode):
     game = lobbyManager.getGameManager(masterRoomCode)
+    helper.tellGroup('endVoting', game.getAudienceSIDs())
     game.activePlayers[game.competitors[0]].updateHighestVote(game.playerOneVotes)
     game.activePlayers[game.competitors[0]].updateHighestVote(game.playerTwoVotes)
     emit('spectate_match', game.getAudienceSIDs())
@@ -133,9 +172,11 @@ def checkNextState(masterRoomCode):
     elif game.validateSameGamesPlayed():
         #Move to the next round
         emit('displayScoreboard', room=game.host)
+        game.resetPlayerVotes()
     else:
         #Move to the next set of players
         emit('nextGame', room=game.host)
+        game.resetPlayerVotes()
 
 def checkVotes(game):
     game.currentVotes += 1

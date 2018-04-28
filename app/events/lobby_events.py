@@ -80,6 +80,7 @@ def playerJoin(message):
     if hostSID == 0:
         print "Error in finding hostSID in playerJoin"
         return
+
     emit('playerJoin', {'username': message['user'], 'charIndex': message['char_select']}, room=hostSID)
 
 @socketio.on('playerLeave')

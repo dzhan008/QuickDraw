@@ -1,0 +1,484 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"low",
+				"lowestDistance"
+			],
+			[
+				"lowes",
+				"lowestDistance"
+			],
+			[
+				"att",
+				"attributes"
+			],
+			[
+				"attri",
+				"attributeData"
+			],
+			[
+				"fin",
+				"finalDirectory"
+			],
+			[
+				"at",
+				"attribute_1"
+			],
+			[
+				"atti",
+				"attribute"
+			],
+			[
+				"data",
+				"dataset"
+			],
+			[
+				"lowe",
+				"lowestIndex"
+			],
+			[
+				"pr",
+				"primaryPoint"
+			],
+			[
+				"co",
+				"correctLabels"
+			],
+			[
+				"gene",
+				"generateDistanceMat"
+			],
+			[
+				"class",
+				"classIndex"
+			],
+			[
+				"set_y",
+				"set_ylabel"
+			],
+			[
+				"setx_",
+				"set_xlabel"
+			],
+			[
+				"attribut",
+				"attributeData"
+			],
+			[
+				"ATT",
+				"attribute_2"
+			],
+			[
+				"attr",
+				"attributes"
+			],
+			[
+				"Atr",
+				"attributeLength"
+			],
+			[
+				"cor",
+				"corrMat"
+			],
+			[
+				"atr",
+				"attributes"
+			],
+			[
+				"get",
+				"getAttributes"
+			],
+			[
+				"set_x",
+				"set_xticklabels"
+			],
+			[
+				"std",
+				"stdev"
+			],
+			[
+				"spe",
+				"sepalLengthData"
+			],
+			[
+				"cov",
+				"covariance"
+			],
+			[
+				"sepal",
+				"sepalLengthData"
+			],
+			[
+				"sep",
+				"sepalWidthData"
+			],
+			[
+				"iris",
+				"irisData"
+			],
+			[
+				"max",
+				"maxMinData"
+			],
+			[
+				"attrib",
+				"attributeData"
+			],
+			[
+				"bin",
+				"bin_amount"
+			],
+			[
+				"set",
+				"set_title"
+			],
+			[
+				"col",
+				"columns"
+			],
+			[
+				"bar",
+				"bar_width"
+			],
+			[
+				"ir",
+				"irisData"
+			],
+			[
+				"Sepal",
+				"sepal-length"
+			],
+			[
+				"highest",
+				"highestVoter"
+			],
+			[
+				"high",
+				"highestVoter"
+			],
+			[
+				"playerO",
+				"playerOneVotes"
+			],
+			[
+				"compe",
+				"getCompetitorSIDs"
+			],
+			[
+				"show",
+				"showdownStarted"
+			],
+			[
+				"game",
+				"gameState"
+			],
+			[
+				"com",
+				"competitors"
+			],
+			[
+				"av",
+				"activePlayers"
+			],
+			[
+				"ACT",
+				"activePlayers"
+			],
+			[
+				"activ",
+				"activePlayers"
+			],
+			[
+				"hos",
+				"hostSID"
+			],
+			[
+				"comp",
+				"competitors"
+			],
+			[
+				"act",
+				"activePlayers"
+			],
+			[
+				"compet",
+				"competitorNames"
+			],
+			[
+				"roo",
+				"room_code"
+			],
+			[
+				"remove",
+				"removeGame"
+			],
+			[
+				"flask",
+				"flask_app"
+			],
+			[
+				"showo",
+				"showdown_events"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/D/Documents/UCR/CS171/Assignment_1/main.py",
+			"settings":
+			{
+				"buffer_size": 11347,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/Documents/UCR/CS171/Assignment_1"
+	],
+	"file_history":
+	[
+		"/D/Documents/Python/app/classes/forms.py",
+		"/D/Documents/Python/app/events/showdown_events.py",
+		"/D/Documents/Python/app/routes/lobby_routes.py",
+		"/D/Documents/Python/app/events/lobby_events.py",
+		"/D/Documents/Python/app/routes/showdown_routes.py",
+		"/D/Documents/Python/app/classes/LobbyManager.py",
+		"/D/Documents/Python/app/classes/Player.py",
+		"/D/Documents/Python/app/classes/GameManager.py",
+		"/D/Documents/Python/app/__init__.py",
+		"/D/Documents/Python/quickdraw.py",
+		"/D/Documents/Python/app/classes/__init__.py",
+		"/D/Documents/Python/app/classes/helper.py",
+		"/D/Documents/Python/app/events/bracket_events.py",
+		"/D/Documents/Python/app/routes/__init__.py",
+		"/D/Documents/Python/app/events/__init__.py",
+		"/D/Documents/Python/app/routes/bracket_routes.py",
+		"/D/Documents/Python/test.py",
+		"/D/Documents/Python/routes/__init__.py",
+		"/D/Documents/Python/routes/showdown_routes.py",
+		"/D/Documents/Python/events/__init__.py",
+		"/D/Documents/Python/events/showdown_events.py",
+		"/D/Documents/Python/flaskapp.py",
+		"/D/Documents/Python/forms.py",
+		"/D/Documents/Python/routes/showdown_blueprint.py"
+	],
+	"find":
+	{
+		"height": 52.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"print",
+			"stats",
+			"ticker",
+			"sqrt",
+			"bin_amount",
+			"rects1",
+			"bin_size",
+			"resetplayervote",
+			"reset",
+			"winner",
+			"voting",
+			"playerschoose",
+			"emit",
+			"start",
+			"showdown",
+			"init",
+			"setcomp",
+			"set",
+			"drawing",
+			"tell",
+			"request",
+			"showdown_pages",
+			"']\n",
+			"showdown_events",
+			"flask_app"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"flask_app",
+			"showdown_page",
+			"showdown_events"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/D/Documents/UCR/CS171/Assignment_1/main.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11347,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10536,
+								10514
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4321.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 35.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "assignment_1.sublime-project",
+	"replace":
+	{
+		"height": 53.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 625.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"D:\\Documents\\Python\\quickdraw.sublime-project"
+			]
+		],
+		"width": 475.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
