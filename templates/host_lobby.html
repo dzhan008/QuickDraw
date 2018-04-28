@@ -64,7 +64,8 @@
             function startGame()
             {
                 stopMusic();
-                $('body').html('<video id=\"tutorial_video\" autoplay=\"autoplay\"><source src=\"static/video/' + videoName + '\" type=\"video/mp4\" /></video>');
+                // $('body').html('<video id=\"tutorial_video\" autoplay=\"autoplay\"><source src=\"static/video/' + videoName + '\" type=\"video/mp4\" /></video>');
+                $('body').html('<div id=\"tutContainer\"><video id=\"tutorial_video\" autoplay=\"autoplay\"><source src=\"static/video/' + videoName + '\" type=\"video/mp4\" /></video></div>');
                 socket.emit('tutorialStart', codeString);
                 $('#tutorial_video').on('ended', function(){
                     setupGame();
