@@ -60,7 +60,7 @@ def spectatorJoin(gameCode):
     else:
         #Add player to spectator
         game.addSpectator(request.sid)
-        join_room(message[gameCode])
+        join_room(gameCode)
         gameState = game.state
         if gameState == 1: #lobby
             emit('spectatorState', {'gameState': gameState})
@@ -80,7 +80,6 @@ def playerJoin(message):
     if hostSID == 0:
         print "Error in finding hostSID in playerJoin"
         return
-
     emit('playerJoin', {'username': message['user'], 'charIndex': message['char_select']}, room=hostSID)
 
 @socketio.on('playerLeave')
